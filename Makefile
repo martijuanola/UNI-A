@@ -1,4 +1,4 @@
-TARGET = greedy local_search metaheuristic #cplex hybrid_metaheuristic
+TARGET = basic greedy local_search metaheuristic #cplex hybrid_metaheuristic
 CXXFLAGS = -ansi -O3 -fpermissive -std=c++17 
 OBJS = src/Random.o src/Timer.o
 CPLOBJS = src/Random.o src/Timer.o
@@ -22,6 +22,9 @@ CPLEXINCDIR   = $(CPLEXDIR)/include
 CCFLAGS = $(CCOPT) -I$(CPLEXINCDIR) -I$(CONCERTINCDIR)
 
 all: ${TARGET}
+
+basic: src/basic/basic.cpp $(OBJS)
+	${CCC} ${CXXFLAGS} -o bin/$@ $^
 
 greedy: src/greedy/greedy.cpp $(OBJS)
 	${CCC} ${CXXFLAGS} -o bin/$@ $^

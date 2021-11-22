@@ -18,7 +18,7 @@
 #include <config.h>
 #endif
 
-#include "Timer.h"
+#include "../Timer.h"
 #include <vector>
 #include <string>
 #include <stdio.h>

@@ -1,7 +1,7 @@
-TARGET = greedy cplex local_search metaheuristic hybrid_metaheuristic
+TARGET = greedy local_search metaheuristic #cplex hybrid_metaheuristic
 CXXFLAGS = -ansi -O3 -fpermissive -std=c++17 
-OBJS = Random.o Timer.o
-CPLOBJS = Random.o Timer.o
+OBJS = src/Random.o src/Timer.o
+CPLOBJS = src/Random.o src/Timer.o
 
 SYSTEM     = x86-64_linux
 LIBFORMAT  = static_pic
@@ -10,6 +10,7 @@ CONCERTDIR    = /home/mjblesa/ILOG/CPLEX_Studio201/concert
 GCC = gcc
 CCC = g++
 CCOPT = -m64 -O -fPIC -fexceptions -DNDEBUG -DIL_STD -std=c++17 -fpermissive -w
+
 CPLEXBINDIR   = $(CPLEXDIR)/bin/$(BINDIST)
 CPLEXLIBDIR   = $(CPLEXDIR)/lib/$(SYSTEM)/$(LIBFORMAT)
 CONCERTLIBDIR = $(CONCERTDIR)/lib/$(SYSTEM)/$(LIBFORMAT)
@@ -22,27 +23,28 @@ CCFLAGS = $(CCOPT) -I$(CPLEXINCDIR) -I$(CONCERTINCDIR)
 
 all: ${TARGET}
 
-cplex: cplex.o $(CPLOBJS)
-	$(CCC) $(CCFLAGS) cplex.o $(CPLOBJS) -o cplex $(CCLNFLAGS)
+greedy: src/greedy/greedy.cpp $(OBJS)
+	${CCC} ${CXXFLAGS} -o bin/$@ $^
 
-cplex.o: cplex.cpp
-	$(CCC) -c $(CCFLAGS) cplex.cpp -o cplex.o 
+local_search: src/local_search/local_search.cpp $(OBJS)
+	${CCC} ${CXXFLAGS} -o bin/$@ $^
 
-hybrid_metaheuristic: hybrid_metaheuristic.o $(CPLOBJS)
-	$(CCC) $(CCFLAGS) hybrid_metaheuristic.o $(CPLOBJS) -o hybrid_metaheuristic $(CCLNFLAGS)
+metaheuristic: src/metaheuristic/metaheuristic.cpp $(OBJS)
+	${CCC} ${CXXFLAGS} -o bin/$@ $^
 
-hybrid_metaheuristic.o: hybrid_metaheuristic.cpp
-	$(CCC) -c $(CCFLAGS) hybrid_metaheuristic.cpp -o hybrid_metaheuristic.o 
- 
-greedy: greedy.cpp $(OBJS)
-	${CCC} ${CXXFLAGS} -o $@ $^
+#hybrid_metaheuristic: hybrid_metaheuristic.o $(CPLOBJS)
+#	$(CCC) $(CCFLAGS) hybrid_metaheuristic.o $(CPLOBJS) -o hybrid_metaheuristic $(CCLNFLAGS)
 
-local_search: local_search.cpp $(OBJS)
-	${CCC} ${CXXFLAGS} -o $@ $^
+#hybrid_metaheuristic.o: hybrid_metaheuristic.cpp
+#	$(CCC) -c $(CCFLAGS) hybrid_metaheuristic.cpp -o hybrid_metaheuristic.o 
 
-metaheuristic: metaheuristic.cpp $(OBJS)
-	${CCC} ${CXXFLAGS} -o $@ $^
+#cplex: cplex.o $(CPLOBJS)
+#	$(CCC) $(CCFLAGS) cplex.o $(CPLOBJS) -o cplex $(CCLNFLAGS)
+
+#cplex.o: src/cplex/cplex.cpp
+#	$(CCC) -c $(CCFLAGS) src/cplex/cplex.cpp -o cplex.o 
 
 clean:
 	@rm -f *~ *.o ${TARGET} core
+	@rm -Rf bin/*
 

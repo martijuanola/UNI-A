@@ -47,7 +47,7 @@ vector< set<int> > neighbors;
 
 // Data structures added
 int n_of_d;
-set<int> d;
+vector<bool> d;
 vector<int> nn;
 
 // string for keeping the name of the input file
@@ -91,7 +91,7 @@ void read_parameters(int argc, char **argv) {
 }
 
 
-bool dominador(vector<set<int>> llista, set<int> ds, int M) {
+bool dominador(vector<set<int>> llista, vector<bool> ds, int M) {
 
     bool b = true;
 
@@ -103,7 +103,7 @@ bool dominador(vector<set<int>> llista, set<int> ds, int M) {
         int count = 0;
         set<int>::iterator itr = llista[i].begin();
         while(count < float(n)/2 and itr != llista[i].end() and b) { //mirar que funcioni bé la divisio per float
-            if(ds.find(*itr) != ds.end()) count++;
+            if(ds[*itr]) count++;
             itr++;
         }
         if(count < float(n)/2) {
@@ -115,17 +115,21 @@ bool dominador(vector<set<int>> llista, set<int> ds, int M) {
     return b;
 }
 
-bool dominador(vector<set<int>> llista, set<int> ds, vector<int> nnds, int M) {
+int dominador(vector<set<int>> llista, vector<bool> ds, vector<int> nnds, int M) {
 
     bool b = true;
-
+    int falta = -1;
     int i = 0;
     while(i < llista.size() and b) {
-        if(nnds[i] < float(llista[i].size())/2) b = false;
+        if(nnds[i] < float(llista[i].size())/2) {
+            b = false;
+            falta = i;
+        }
         i++;
     }
 
-    return b;
+    if (falta != -1) return falta+1;
+    return falta;
 }
 
 bool minimal(vector<set<int>> llista, set<int> ds, vector<int> nnds, int M) {
@@ -143,13 +147,37 @@ bool minimal(vector<set<int>> llista, set<int> ds, vector<int> nnds, int M) {
         bool found = false;
         while(b and (not found) and itr != llista[i].end()) {
             if(nnds[*itr]-1 < float(llista[*itr].size())/2) found = true;
+            itr++;
         }
         if(not found) b = false;
+        i++;
     }
 
     return b;
 }
 
+int minimal2(vector<set<int>> llista, vector<bool> ds, vector<int> nnds, int M) {
+    int inutil = -1;
+    bool minimal = true;
+    int i = 0;
+    while (i < llista.size() && minimal) {
+        if (ds[i]) {
+            set<int>::iterator itr = llista[i].begin(); //Tots els veïns han de ser minimals
+            bool esUtil = false;
+            while (itr != llista[i].end() && not esUtil) {
+                esUtil = nnds[*itr]-1 < float(llista[*itr].size())/float(2); //Amb un menys no te infuencia positiva, per tant és necessari
+                ++itr;
+            }
+            if (not esUtil) {
+                minimal = false;
+                inutil = i;
+            }
+        }
+        ++i;
+    }
+    if (inutil != -1) return inutil+1;
+    else return inutil;
+}
 /************
 Main function
 *************/
@@ -184,29 +212,30 @@ int main( int argc, char **argv ) {
 
     nn = vector<int>(n_of_nodes,0);
     indata >> n_of_d;
+    d = vector<bool>(n_of_nodes, false);
 
     for(int i = 0; i < n_of_d; i++) {
         int aux;
         indata >> aux;
-        d.insert(aux-1);
+        d[aux-1] = true;
     }
 
     int u, v;
     while(indata >> u >> v) {
         neighbors[u - 1].insert(v - 1);
         neighbors[v - 1].insert(u - 1);
-        if(d.find(v) != d.end()) nn[u]++;
-        if(d.find(u) != d.end()) nn[v]++;
+        if(d[v-1]) nn[u-1]++;
+        if(d[u-1]) nn[v-1]++;
     }
     indata.close();
 
 
     for(int i = 0; i < n_of_nodes; i++) {
-        if(d.find(i) != d.end()) cout << "(D)";
-        cout << "\tNode " << i << "\t";
+        if(d[i]) cout << "(D)";
+        cout << "\tNode " << i+1 << "\t";
         set<int>::iterator itr = neighbors[i].begin();
         while(itr != neighbors[i].end()){
-            cout << *itr << " ";
+            cout << *itr+1 << " ";
             itr++;
         }
         cout << endl;
@@ -215,20 +244,22 @@ int main( int argc, char **argv ) {
 
     // the computation time starts now
     Timer timer;
-    double ct = timer.elapsed_time(Timer::VIRTUAL);
 
-    bool b1 = dominador(neighbors,d,n_of_arcs);
-    bool b2 = false;
-    if(b1) b2 = minimal(neighbors,d,nn,n_of_arcs);
+    int b1 = dominador(neighbors,d,nn,n_of_arcs); //-1 no ha trobat cap vertex que no tingui influencia positiva
+    int b2 = -1;
+    if(b1 == -1) b2 = minimal2(neighbors,d,nn,n_of_arcs); //-1 no ha trobat cap vertex que li sobri un vertex del set dominant
 
-
-    if(b1) {
+    if(b1 == -1) {
         cout << "IS dominator" << endl;
-        if(b2) cout << "IS minimal" << endl;
-        else cout << "IS NOT minimal" << endl;
+        if(b2 == -1) cout << "IS minimal" << endl;
+        else cout << "IS NOT minimal vertex inutil: " << b2 << endl;
+        if (minimal2(neighbors,d,nn,n_of_arcs))  cout << "funca"<< endl;
+        else cout << "no funca" << endl;
     }
-    else cout << "cagaste" << endl;
+    else cout << "cagaste " << b1 << " no es felis" << endl;
 
+    double ct = timer.elapsed_time(Timer::VIRTUAL);
     cout << "time " << ct << endl;
+    return 0;
 }
 

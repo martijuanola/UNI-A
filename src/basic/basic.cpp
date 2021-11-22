@@ -143,8 +143,11 @@ bool minimal(vector<set<int>> llista, set<int> ds, vector<int> nnds, int M) {
         bool found = false;
         while(b and (not found) and itr != llista[i].end()) {
             if(nnds[*itr]-1 < float(llista[*itr].size())/2) found = true;
+            itr++;
         }
         if(not found) b = false;
+
+        i++;
     }
 
     return b;

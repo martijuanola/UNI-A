@@ -1,0 +1,25 @@
+
+Abans de poder compilar el fitxer cplex.cpp (mitjancant la comanda 'make'), 
+heu d'instal.lar el software CPLEX. Per a fer-ho, copieu el fitxer 
+
+    CPLEX_Studio201.tgz 
+
+al lloc que desitgeu de la vostra computadora. Per exemple, a 
+
+    /home/mjblesa/ILOG/
+
+Despres, descomprimiu-lo amb la comanda
+
+    tar xvzf CPLEX_Studio201.tgz
+
+Una vegada descomprimit, hem d'ajustar les rutes per tal que el compilador 
+trobi el software del CPLEX. Això ho fem al Makefile, afegint les seguents 
+dues linies:
+
+    CPLEXDIR      = /home/mjblesa/ILOG/CPLEX_Studio201/cplex
+    CONCERTDIR    = /home/mjblesa/ILOG/CPLEX_Studio201/concert
+
+El Makefile que se us proporciona ja inclou aquestes linies, pero les haureu 
+d'adaptar convenientment al cami on hagueu instal.lat vosaltres el CPLEX.
+
+

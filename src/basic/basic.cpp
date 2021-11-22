@@ -253,8 +253,6 @@ int main( int argc, char **argv ) {
         cout << "IS dominator" << endl;
         if(b2 == -1) cout << "IS minimal" << endl;
         else cout << "IS NOT minimal vertex inutil: " << b2 << endl;
-        if (minimal2(neighbors,d,nn,n_of_arcs))  cout << "funca"<< endl;
-        else cout << "no funca" << endl;
     }
     else cout << "cagaste " << b1 << " no es felis" << endl;
 

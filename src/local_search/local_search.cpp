@@ -26,9 +26,9 @@ time_t t;
 Random* rnd;
 
 // Data structures for the problem data
-int n_of_nodes;
-int n_of_arcs;
-vector< set<int> > neighbors;
+int N;
+int M;
+vector<set<int>> neighbors;
 
 // string for keeping the name of the input file
 string inputFile;
@@ -115,9 +115,9 @@ int main( int argc, char **argv ) {
         cout << "Error: file could not be opened" << endl;
     }
 
-    indata >> n_of_nodes;
-    indata >> n_of_arcs;
-    neighbors = vector< set<int> >(n_of_nodes);
+    indata >> N;
+    indata >> M;
+    neighbors = vector< set<int> >(N);
     int u, v;
     while(indata >> u >> v) {
         neighbors[u - 1].insert(v - 1);

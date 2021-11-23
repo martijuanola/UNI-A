@@ -41,6 +41,13 @@ int n_apps = 1;
 int dummy_integer_parameter = 0;
 double dummy_double_parameter = 0.0;
 
+//FUNCIONS HILL CLIMBING
+
+//double heruistic() {}
+//void opADD() {}
+//void opSWAP() {}
+
+
 set<int> hillClimbing() {
     set<int> s;
     return s;

@@ -18,22 +18,13 @@
 #include <sstream>
 #include <vector>
 #include <set>
+#include <unordered_set>
 #include <limits>
 #include <iomanip>
 
 // global variables concerning the random number generator (in case needed)
 time_t t;
 Random* rnd;
-
-// Data structures for the problem data
-int n_of_nodes;
-int n_of_arcs;
-vector< set<int> > neighbors;
-
-// Data structures added
-int n_of_d;
-vector<bool> d;
-vector<int> nn;
 
 // string for keeping the name of the input file
 string inputFile;
@@ -42,6 +33,12 @@ string inputFile;
 // see function read_parameters(...)
 int dummy_integer_parameter = 0;
 double dummy_double_parameter = 0.0;
+
+// GLOBAL VARIABLES
+int N;
+int M;
+vector<set<int>> neighborsS;
+vector<unordered_set<int>> neighborsUS;
 
 
 inline int stoi(string &s) {
@@ -172,35 +169,43 @@ int main( int argc, char **argv ) {
         cout << "Error: file could not be opened" << endl;
     }
 
-    indata >> n_of_nodes;
-    indata >> n_of_arcs;
-    neighbors = vector< set<int> >(n_of_nodes);
+    indata >> N;
+    indata >> M;
+    neighborsS = vector< set<int> >(N);
+    neighborsUS = vector< unordered_set<int> >(N);
 
-    nn = vector<int>(n_of_nodes,0);
-    indata >> n_of_d;
-    d = vector<bool>(n_of_nodes, false);
+    // VARIABLES PEL RECOBRIMENT
+    int ND; //nombre de nodes de D
+    vector<int> NND = vector<int>(N,0); //nombre de veins d'un node a D
+    vector<bool> DV = vector<bool>(N, false); //nodes de D
+    unordered_set<int> DUS; //nodes de D
+    
+    indata >> ND;
 
-    for(int i = 0; i < n_of_d; i++) {
+    for(int i = 0; i < ND; i++) {
         int aux;
         indata >> aux;
-        d[aux-1] = true;
+        DV[aux-1] = true;
+        DUS.insert(aux-1);
     }
 
     int u, v;
     while(indata >> u >> v) {
-        neighbors[u - 1].insert(v - 1);
-        neighbors[v - 1].insert(u - 1);
-        if(d[v-1]) nn[u-1]++;
-        if(d[u-1]) nn[v-1]++;
+        neighborsS[u - 1].insert(v - 1);
+        neighborsS[v - 1].insert(u - 1);
+        neighborsUS[u - 1].insert(v - 1);
+        neighborsUS[v - 1].insert(u - 1);
+        if(DV[v-1]) NND[u-1]++;
+        if(DV[u-1]) NND[v-1]++;
     }
     indata.close();
 
 
-    for(int i = 0; i < n_of_nodes; i++) {
-        if(d[i]) cout << "(D)";
+    for(int i = 0; i < N; i++) {
+        if(DV[i]) cout << "(D)";
         cout << "\tNode " << i+1 << "\t";
-        set<int>::iterator itr = neighbors[i].begin();
-        while(itr != neighbors[i].end()){
+        set<int>::iterator itr = neighborsS[i].begin();
+        while(itr != neighborsS[i].end()){
             cout << *itr+1 << " ";
             itr++;
         }
@@ -208,22 +213,31 @@ int main( int argc, char **argv ) {
     }
 
 
-    // the computation time starts now
-    Timer timer;
+    //VECTOR<SET<INT>> + VECTOR<BOOL>
 
-    int b1 = dominador(neighbors,d,nn,n_of_arcs); //-1 no ha trobat cap vertex que no tingui influencia positiva
+    Timer timer;
+    int b1 = dominador(neighborsS,DV,NND,M); //-1 no ha trobat cap vertex que no tingui influencia positiva
     int b2 = -1;
-    if(b1 == -1) b2 = minimal2(neighbors,d,nn,n_of_arcs); //-1 no ha trobat cap vertex que li sobri un vertex del set dominant
+    if(b1 == -1) b2 = minimal2(neighborsS,DV,NND,M); //-1 no ha trobat cap vertex que li sobri un vertex del set dominant
 
     if(b1 == -1) {
-        cout << "IS dominator" << endl;
-        if(b2 == -1) cout << "IS minimal" << endl;
-        else cout << "IS NOT minimal vertex inutil: " << b2 << endl;
+        cout << "It's a Positive Influence Dominator Set" << endl;
+        if(b2 == -1) cout << "It's also MINIMAL" << endl;
+        else cout << "It's NOT minimal! Redundant vertex: " << b2 << endl;
     }
-    else cout << "cagaste " << b1 << " no es felis" << endl;
-
+    else cout << "It's NOT a Positive Influence Dominator Set!!!! " << b1 << " does not fulfill the requirements." << endl;
     double ct = timer.elapsed_time(Timer::VIRTUAL);
     cout << "time " << ct << endl;
+
+    //VECTOR<SET<INT>> + VECTOR<UNORDERED_SET<INT>>
+
+
+    //VECTOR<UNORDERED_SET<INT>> + VECTOR<BOOL>
+
+
+    //VECTOR<UNORDERED_SET<INT>> + VECTOR<UNORDERED_SET<INT>>
+
+
     return 0;
 }
 

@@ -259,63 +259,29 @@ int main( int argc, char **argv ) {
 
     Timer timer;
     b1 = dominador1(NND); //-1 no ha trobat cap vertex que no tingui influencia positiva
-    b2 = -1;
-    if(b1 == -1) b2 = minimal1(DV,NND); //-1 no ha trobat cap vertex que li sobri un vertex del set dominant
 
-    if(b1 == -1) {
-        cout << "It's a Positive Influence Dominator Set" << endl;
-        if(b2 == -1) cout << "It's also MINIMAL" << endl;
-        else cout << "It's NOT minimal! Redundant vertex: " << b2 << endl;
+
+    b2 = 0;
+    while (b2 > -1) {
+        b2 = minimal1(DV,NND); //-1 no ha trobat cap vertex que li sobri un vertex del set dominant
+        --b2;
+        if (b2 > -1) {
+            DV[b2] = false;
+            auto itr = neighborsS[b2].begin(); 
+            while (itr != neighborsS[b2].end()) {
+                --NND[*itr];
+                ++itr;
+            }
+        }
     }
-    else cout << "It's NOT a Positive Influence Dominator Set!!!! " << b1 << " does not fulfill the requirements." << endl;
+    int eliminats = 0;
+    for (int i = 0; i < N; ++i) {
+        if (DV[i]) ++eliminats;
+    }
+    cout << "eliminated: " << eliminats;
+
     double ct1 = timer.elapsed_time(Timer::VIRTUAL);
     cout << "time " << ct1 << endl;
-
-    //VECTOR<SET<INT>> + VECTOR<UNORDERED_SET<INT>>
-
-    b1 = dominador1(NND); //-1 no ha trobat cap vertex que no tingui influencia positiva
-    b2 = -1;
-    if(b1 == -1) b2 = minimal2(DUS,NND); //-1 no ha trobat cap vertex que li sobri un vertex del set dominant
-
-    if(b1 == -1) {
-        cout << "It's a Positive Influence Dominator Set" << endl;
-        if(b2 == -1) cout << "It's also MINIMAL" << endl;
-        else cout << "It's NOT minimal! Redundant vertex: " << b2 << endl;
-    }
-    else cout << "It's NOT a Positive Influence Dominator Set!!!! " << b1 << " does not fulfill the requirements." << endl;
-    double ct2 = timer.elapsed_time(Timer::VIRTUAL);
-    cout << "time " << ct2-ct1 << endl;
-
-    //VECTOR<UNORDERED_SET<INT>> + VECTOR<BOOL>
-
-    b1 = dominador2(NND); //-1 no ha trobat cap vertex que no tingui influencia positiva
-    b2 = -1;
-    if(b1 == -1) b2 = minimal3(DV,NND); //-1 no ha trobat cap vertex que li sobri un vertex del set dominant
-
-    if(b1 == -1) {
-        cout << "It's a Positive Influence Dominator Set" << endl;
-        if(b2 == -1) cout << "It's also MINIMAL" << endl;
-        else cout << "It's NOT minimal! Redundant vertex: " << b2 << endl;
-    }
-    else cout << "It's NOT a Positive Influence Dominator Set!!!! " << b1 << " does not fulfill the requirements." << endl;
-    double ct3 = timer.elapsed_time(Timer::VIRTUAL);
-    cout << "time " << ct3-ct2 << endl;
-
-    //VECTOR<UNORDERED_SET<INT>> + VECTOR<UNORDERED_SET<INT>>
-
-    b1 = dominador2(NND); //-1 no ha trobat cap vertex que no tingui influencia positiva
-    b2 = -1;
-    if(b1 == -1) b2 = minimal4(DUS,NND); //-1 no ha trobat cap vertex que li sobri un vertex del set dominant
-
-    if(b1 == -1) {
-        cout << "It's a Positive Influence Dominator Set" << endl;
-        if(b2 == -1) cout << "It's also MINIMAL" << endl;
-        else cout << "It's NOT minimal! Redundant vertex: " << b2 << endl;
-    }
-    else cout << "It's NOT a Positive Influence Dominator Set!!!! " << b1 << " does not fulfill the requirements." << endl;
-    double ct4 = timer.elapsed_time(Timer::VIRTUAL);
-    cout << "time " << ct4-ct3 << endl;
-
 
     return 0;
 }

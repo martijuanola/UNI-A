@@ -51,4 +51,5 @@ metaheuristic: src/metaheuristic/metaheuristic.cpp $(OBJS)
 clean:
 	@rm -f *~ *.o ${TARGET} core
 	@rm -Rf bin/*
+	@rm -f src/*.o
 

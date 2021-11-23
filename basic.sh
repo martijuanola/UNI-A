@@ -1,1 +1,1 @@
-./bin/basic -i src/basic/basic_test2.txt
+./bin/basic -i src/basic/graph_actors_dat.txt

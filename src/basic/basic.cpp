@@ -141,7 +141,7 @@ int minimal3(vector<bool> DV, vector<int> NND) {
         int count = 0;
         unordered_set<int>::iterator itr = neighborsUS[i].begin();
         while(itr != neighborsUS[i].end() and count < min) {
-            if(DV[*itr]) count++;
+            if(NND[*itr]-1 < min) count++;
             itr++;
         }
         if(count < min) return i+1;
@@ -156,7 +156,7 @@ int minimal4(unordered_set<int> DUS, vector<int> NND) {
         int count = 0;
         unordered_set<int>::iterator itr2 = neighborsUS[*itr1].begin();
         while(itr2 != neighborsUS[*itr1].end() and count < min) {
-            if(DUS.find(*itr2) != DUS.end()) count++;
+            if(NND[*itr2]-1 < min) count++;
             itr2++;
         }
         if(count < min) return *itr1+1;
@@ -165,6 +165,18 @@ int minimal4(unordered_set<int> DUS, vector<int> NND) {
     return -1;
 }
 
+void print(vector<bool> DV) {
+    for(int i = 0; i < N; i++) {
+        if(DV[i]) cout << "(D)";
+        cout << "\tNode " << i+1 << "\t";
+        set<int>::iterator itr = neighborsS[i].begin();
+        while(itr != neighborsS[i].end()){
+            cout << *itr+1 << " ";
+            itr++;
+        }
+        cout << endl;
+    }
+}
 
 /************
 Main function
@@ -224,17 +236,7 @@ int main( int argc, char **argv ) {
     }
     indata.close();
 
-
-    for(int i = 0; i < N; i++) {
-        if(DV[i]) cout << "(D)";
-        cout << "\tNode " << i+1 << "\t";
-        set<int>::iterator itr = neighborsS[i].begin();
-        while(itr != neighborsS[i].end()){
-            cout << *itr+1 << " ";
-            itr++;
-        }
-        cout << endl;
-    }
+    //print();
 
     int b1, b2;
     //VECTOR<SET<INT>> + VECTOR<BOOL>
@@ -281,7 +283,7 @@ int main( int argc, char **argv ) {
     }
     else cout << "It's NOT a Positive Influence Dominator Set!!!! " << b1 << " does not fulfill the requirements." << endl;
     double ct3 = timer.elapsed_time(Timer::VIRTUAL);
-    //cout << "time " << ct3-ct2 << endl;
+    cout << "time " << ct3-ct2 << endl;
 
     //VECTOR<UNORDERED_SET<INT>> + VECTOR<UNORDERED_SET<INT>>
 

@@ -90,20 +90,12 @@ int dominador2(vector<int> NND) {
 }
 
 int dominador1(vector<int> nnds) {
-
-    bool b = true;
-    int falta = -1;
     int i = 0;
-    while(i < N and b) {
-        if(nnds[i] < float(neighborsS[i].size())/2) {
-            b = false;
-            falta = i;
-        }
+    while(i < N) {
+        if(nnds[i] < float(neighborsS[i].size())/2) return i+1;
         i++;
     }
-
-    if (falta != -1) return falta+1;
-    return falta;
+    return -1;
 }
 
 //COMPROVA SI ÉS MINIMAL(HA DE SER DOMINADOR)

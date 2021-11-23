@@ -240,8 +240,8 @@ int main( int argc, char **argv ) {
     //VECTOR<SET<INT>> + VECTOR<BOOL>
 
     Timer timer;
-    int b1 = dominador(NND); //-1 no ha trobat cap vertex que no tingui influencia positiva
-    int b2 = -1;
+    b1 = dominador2(NND); //-1 no ha trobat cap vertex que no tingui influencia positiva
+    b2 = -1;
     if(b1 == -1) b2 = minimal1(DV,NND); //-1 no ha trobat cap vertex que li sobri un vertex del set dominant
 
     if(b1 == -1) {

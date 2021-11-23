@@ -89,6 +89,22 @@ int dominador2(vector<int> NND) {
     return -1;
 }
 
+int dominador1(vector<int> nnds) {
+
+    bool b = true;
+    int falta = -1;
+    int i = 0;
+    while(i < N and b) {
+        if(nnds[i] < float(neighborsS[i].size())/2) {
+            b = false;
+            falta = i;
+        }
+        i++;
+    }
+
+    if (falta != -1) return falta+1;
+    return falta;
+}
 
 //COMPROVA SI ÉS MINIMAL(HA DE SER DOMINADOR)
 int minimal1(vector<bool> ds, vector<int> nnds) {
@@ -242,7 +258,7 @@ int main( int argc, char **argv ) {
     //VECTOR<SET<INT>> + VECTOR<BOOL>
 
     Timer timer;
-    b1 = dominador2(NND); //-1 no ha trobat cap vertex que no tingui influencia positiva
+    b1 = dominador1(NND); //-1 no ha trobat cap vertex que no tingui influencia positiva
     b2 = -1;
     if(b1 == -1) b2 = minimal1(DV,NND); //-1 no ha trobat cap vertex que li sobri un vertex del set dominant
 
@@ -257,7 +273,7 @@ int main( int argc, char **argv ) {
 
     //VECTOR<SET<INT>> + VECTOR<UNORDERED_SET<INT>>
 
-    b1 = dominador2(NND); //-1 no ha trobat cap vertex que no tingui influencia positiva
+    b1 = dominador1(NND); //-1 no ha trobat cap vertex que no tingui influencia positiva
     b2 = -1;
     if(b1 == -1) b2 = minimal2(DUS,NND); //-1 no ha trobat cap vertex que li sobri un vertex del set dominant
 

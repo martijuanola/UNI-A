@@ -11,11 +11,11 @@ Representació Estat:
         - D
         - Veins que estan a D
 
-
 Estructures de Dades:
 
-    - Set/vector<bool> -> Recobriment D
-    - Set/vector<int> -> nº veins que estan a D
+    - Vector<Unordered<set>> -> Graph
+    - Set -> Recobriment D
+    - vector<int> -> nº veins que estan a D
 
 Heurística:
     

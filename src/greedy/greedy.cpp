@@ -98,16 +98,22 @@ int dominador2(vector<int> NND) {
 }
 
 int minimal3(vector<bool> DV, vector<int> NND) { 
-    for(int i = 0; i < DV.size(); i++) {
-        if(not DV[i]) continue;
-        int min = minNND(neighbors[i].size());
-        int count = 0;
-        unordered_set<int>::iterator itr = neighbors[i].begin();
-        while(itr != neighbors[i].end() and count < min) {
-            if(NND[*itr]-1 < min) count++;
-            itr++;
+    bool minimal = true;
+    int i = 0;
+    while (i < N && minimal) {
+        if (DV[i]) {
+            unordered_set<int>::iterator itr = neighbors[i].begin(); //Tots els veïns han de ser minimals
+            bool esUtil = false;
+            while (itr != neighbors[i].end() && not esUtil) {
+                esUtil = NND[*itr]-1 < float(neighbors[*itr].size())/float(2); //Amb un menys no te infuencia positiva, per tant és necessari
+                ++itr;
+            }
+            if (not esUtil) {
+                minimal = false;
+                return i;
+            }
         }
-        if(count < min) return i;
+        ++i;
     }
     return -1;
 }
@@ -167,7 +173,12 @@ void greedy() {
         D[v] = true;
         afegeixVeins(v);
     }
-    if (dominador()) cout << "yayyy"<<endl;
+    
+    int count = 0;
+    for (int i = 0; i < N; ++i) if (D[i]) {
+        ++count;
+    }
+    cout << "Number of vertices in solution: " << count << endl;
 
     int b2 = 0;
     while (b2 != -1) {

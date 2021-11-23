@@ -1,18 +1,3 @@
-/***************************************************************************
-    greedy.cpp 
-    (C) 2021 by C. Blum & M. Blesa
-    
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -56,7 +41,7 @@ string inputFile;
 // dummy parameters as examples for creating command line parameters 
 // see function read_parameters(...)
 int dummy_integer_parameter = 0;
-int dummy_double_parameter = 0.0;
+double dummy_double_parameter = 0.0;
 
 
 inline int stoi(string &s) {
@@ -91,6 +76,9 @@ void read_parameters(int argc, char **argv) {
 }
 
 
+//FUNCIONS:
+
+//COMPROVAR SI ÉS DOMINADOR
 bool dominador(vector<set<int>> llista, vector<bool> ds, int M) {
 
     bool b = true;
@@ -132,30 +120,7 @@ int dominador(vector<set<int>> llista, vector<bool> ds, vector<int> nnds, int M)
     return falta;
 }
 
-bool minimal(vector<set<int>> llista, set<int> ds, vector<int> nnds, int M) {
-
-    bool b = true;
-
-    int i = 0;
-    while(b and i < llista.size()) {
-        //ITERAR SOBRE TOTS ELS NODES
-
-        //SI TOTS ELS VEINS DE I TENEN UN NNDS AMB UN NODE DE MARGE, NO ÉS MINIMAL
-        //(I PODRIA NO SER DE D I ES CONTINUARIA COMPLINT LA CONDICIO DE DOMINANT)
-
-        set<int>::iterator itr = llista[i].begin();
-        bool found = false;
-        while(b and (not found) and itr != llista[i].end()) {
-            if(nnds[*itr]-1 < float(llista[*itr].size())/2) found = true;
-            itr++;
-        }
-        if(not found) b = false;
-        i++;
-    }
-
-    return b;
-}
-
+//COMPROVA SI ÉS MINIMAL(HA DE SER DOMINADOR)
 int minimal2(vector<set<int>> llista, vector<bool> ds, vector<int> nnds, int M) {
     int inutil = -1;
     bool minimal = true;
@@ -178,10 +143,11 @@ int minimal2(vector<set<int>> llista, vector<bool> ds, vector<int> nnds, int M) 
     if (inutil != -1) return inutil+1;
     else return inutil;
 }
+
+
 /************
 Main function
 *************/
-
 int main( int argc, char **argv ) {
 
     read_parameters(argc,argv);

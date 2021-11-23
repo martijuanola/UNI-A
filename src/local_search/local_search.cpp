@@ -1,18 +1,3 @@
-/***************************************************************************
-    local_search.cpp
-    (C) 2021 by C.Blum & M.Blesa
-    
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -54,8 +39,12 @@ int n_apps = 1;
 // dummy parameters as examples for creating command line parameters -> 
 // see function read_parameters(...)
 int dummy_integer_parameter = 0;
-int dummy_double_parameter = 0.0;
+double dummy_double_parameter = 0.0;
 
+set<int> hillClimbing() {
+    set<int> s;
+    return s;
+}
 
 inline int stoi(string &s) {
 
@@ -92,11 +81,9 @@ void read_parameters(int argc, char **argv) {
     }
 }
 
-
 /**********
 Main function
 **********/
-
 int main( int argc, char **argv ) {
 
     read_parameters(argc,argv);
@@ -133,34 +120,17 @@ int main( int argc, char **argv ) {
 
     // main loop over all applications of local search
     for (int na = 0; na < n_apps; ++na) {
-
-        // the computation time starts now
+        cout << "start application " << na + 1 << endl;
         Timer timer;
 
-        // Example for requesting the elapsed computation time at any moment: 
-        // double ct = timer.elapsed_time(Timer::VIRTUAL);
+        set<int> solution = hillClimbing();
 
-        cout << "start application " << na + 1 << endl;
-
-        // HERE GOES YOUR LOCAL SEARCH METHOD
-
-        // The starting solution for local search may be randomly generated, 
-        // or you may incorporate your greedy heuristic in order to produce 
-        // the starting solution.
+        results[na] = solution.size();
+        double ct = timer.elapsed_time(Timer::VIRTUAL);
+        times[na] = ct;
         
-        // Whenever you move to a new solution, first take the computation 
-        // time as explained above. Say you store it in variable ct.
-        // Then, write the following to the screen: 
-        // cout << "value " << <value of the current solution>;
-        // cout << "\ttime " << ct << endl;
-
-        // When a local minimum is reached, store the value of the 
-        // corresponding solution in vector results: 
-        // results[na] = <value of the local minimum>;
-        
-        // Finally store the needed computation time (that is, the time 
-        // measured once the local minimum is reached) in vector times: 
-        // times[na] = ct;
+        cout << "value " << results[na];
+        cout << "\ttime " << times[na] << endl;
 
         cout << "end application " << na + 1 << endl;
     }

@@ -1,0 +1,45 @@
+LOCAL SEARCH
+
+
+Representació Estat:
+    
+    - Estàtics:
+        - N
+        - M
+        - Llista d'adjacències
+    - Variables:
+        - D
+        - Veins que estan a D
+
+
+Estructures de Dades:
+
+    - Set/vector<bool> -> Recobriment D
+    - Set/vector<int> -> nº veins que estan a D
+
+Heurística:
+    
+    - Penalitzar molt no solucions(cridant la funció per exemple)
+
+    - Es pot enfocar per:
+        - percentatges/nodes que compleixen condicions
+        - nodes del conjunt amb més grau
+
+
+    - Propostes:
+        H1: (algun N té DN < 0.5 -> 0) && 
+
+Operadors:
+
+    - REMOVE from D
+    - SWAP element of D and of COMPLEMENT D 
+
+    - ADD to D (no crec que tingui sentit)
+
+Hill Climbing:
+
+
+
+Simulated Annealing:
+
+    - Variables:

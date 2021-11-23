@@ -3,13 +3,14 @@ CXXFLAGS = -ansi -O3 -fpermissive -std=c++17
 OBJS = src/Random.o src/Timer.o
 CPLOBJS = src/Random.o src/Timer.o
 
+GCC = gcc
+CCC = g++
+CCOPT = -m64 -O -fPIC -fexceptions -DNDEBUG -DIL_STD -std=c++17 -fpermissive -w
+
 SYSTEM     = x86-64_linux
 LIBFORMAT  = static_pic
 CPLEXDIR      = /home/mjblesa/ILOG/CPLEX_Studio201/cplex
 CONCERTDIR    = /home/mjblesa/ILOG/CPLEX_Studio201/concert
-GCC = gcc
-CCC = g++
-CCOPT = -m64 -O -fPIC -fexceptions -DNDEBUG -DIL_STD -std=c++17 -fpermissive -w
 
 CPLEXBINDIR   = $(CPLEXDIR)/bin/$(BINDIST)
 CPLEXLIBDIR   = $(CPLEXDIR)/lib/$(SYSTEM)/$(LIBFORMAT)

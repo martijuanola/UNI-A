@@ -194,8 +194,8 @@ void greedyMinimal() {
 
  /*------- MAIN -------*/
 
-
-void g(int v) { //s'ha de recalcular g pel vertex v
+//s'ha de recalcular g pel vertex v
+void g(int v) {
     
 }
 
@@ -301,7 +301,7 @@ int main( int argc, char **argv ) {
     for (int i = 0; i < N; ++i) if (D[i]) {
         ++count;
     }
-    cout << "Number of vertices in solution: " << count << endl;
+    cout << "Number of vertexs in solution: " << count << endl;
 
 
     int b2 = minimal3(D,NND);
@@ -312,6 +312,13 @@ int main( int argc, char **argv ) {
         else cout << "It's NOT minimal! Redundant vertex: " << b2 << endl;
     }
     else cout << "It's NOT a Positive Influence Dominator Set!!!! " << b1 << " does not fulfill the requirements." << endl;
+    cout << endl << endl;
+    /*
+    for (int i = 0; i < N; ++i) {
+        if (D[i]) cout << "(D) ";
+        cout << "\t" << i << endl;
+    }
+    */
 
     //double ct = timer.elapsed_time(Timer::VIRTUAL);
     //cout << "value " << results << "\ttime " << ct << endl;

@@ -1,45 +1,47 @@
 LOCAL SEARCH
 
 
-Representació Estat:
-    
-    - Estàtics:
-        - N
-        - M
-        - Llista d'adjacències
-    - Variables:
-        - D
-        - Veins que estan a D
+Coses a fer:
 
-Estructures de Dades:
+    - fer una SOLUCIO INICIAL per millorar el temps de Hill climbing (value 3208.00   time 1351.27)
+        -fer-ne una de simple com paper
+        -fer servir greedy den Jaume
+    - pensar com comparar amb l'heurístic anterior
+    - plantejar una variant del hill on es fa un remove i després optimitzes amb swaps fins que no puguis més
 
-    - Vector<Unordered<set>> -> Graph
-    - Set -> Recobriment D
-    - vector<int> -> nº veins que estan a D
+Heurístiques:
 
-Heurística:
-    
-    - Penalitzar molt no solucions(cridant la funció per exemple)
+    H1: sumatori diferències entre minim
 
-    - Es pot enfocar per:
-        - percentatges/nodes que compleixen condicions
-        - nodes del conjunt amb més grau
+    H2:
 
-
-    - Propostes:
-        H1: (algun N té DN < 0.5 -> 0) && 
 
 Operadors:
 
     - REMOVE from D
-    - SWAP element of D and of COMPLEMENT D 
-
+    - SWAP element of D and of COMPLEMENT D (PROBLEMES AMB ELS HEURÍSTICS A HILL CLIMBING)
     - ADD to D (no crec que tingui sentit)
 
-Hill Climbing:
+ -- Hill Climbing -- 
+
+    -Problemes:
+        - El swap no funciona tal cual
+        - L'heurístic ha de poder comparar l'estat acutal amb el següent(SA)
 
 
 
-Simulated Annealing:
+
+ -- Simulated Annealing -- 
 
     - Variables:
+
+
+
+
+Hill Climbing potxo:
+1.- Generar solució inicial
+2.- While {
+    3.- Eliminar fins no solució
+    4.- swaps fins solució / timout d'iteracions
+
+}

@@ -82,77 +82,15 @@ int minNND(int n) {
 
 
 //Fa servir neighborsUS i nnd
-
-int dominador1(vector<int> nnds) {
-
-    bool b = true;
-    int falta = -1;
-    int i = 0;
-    while(i < N and b) {
-        if(nnds[i] < float(neighborsS[i].size())/2) {
-            b = false;
-            falta = i;
-        }
-        i++;
-    }
-
-    if (falta != -1) return falta;
-    return falta;
-}
-
 int dominador2(vector<int> NND) {
     for(int i = 0; i < neighborsUS.size(); i++) {
-        if(NND[i] < minNND(neighborsUS[i].size())) return i;
+        if(NND[i] < minNND(neighborsUS[i].size())) return i+1;
     }
     return -1;
 }
 
 
 //COMPROVA SI ÉS MINIMAL(HA DE SER DOMINADOR)
-int minimal1(vector<bool> ds, vector<int> nnds) {
-    int inutil = -1;
-    bool minimal = true;
-    int i = 0;
-    while (i < N && minimal) {
-        if (ds[i]) {
-            set<int>::iterator itr = neighborsS[i].begin(); //Tots els veïns han de ser minimals
-            bool esUtil = false;
-            while (itr != neighborsS[i].end() && not esUtil) {
-                esUtil = nnds[*itr]-1 < float(neighborsS[*itr].size())/float(2); //Amb un menys no te infuencia positiva, per tant és necessari
-                ++itr;
-            }
-            if (not esUtil) {
-                minimal = false;
-                inutil = i;
-            }
-        }
-        ++i;
-    }
-    if (inutil != -1) return inutil;
-    else return inutil;
-}
-
-int minimal2(unordered_set<int> ds, vector<int> nnds) {
-    int inutil = -1;
-    bool minimal = true;
-    auto itr = ds.begin();
-    while (itr != ds.end() && minimal) { //Només recorres els vectors dominants
-        set<int>::iterator itr2 = neighborsS[*itr].begin(); //Tots els veïns han de ser minimals
-        bool esUtil = false;
-        while (itr2 != neighborsS[*itr].end() && not esUtil) {
-            esUtil = nnds[*itr2]-1 < float(neighborsS[*itr2].size())/float(2); //Amb un menys no te infuencia positiva, per tant és necessari
-            ++itr2;
-        }
-        if (not esUtil) {
-            minimal = false;
-            inutil = *itr;
-        }
-        ++itr;
-    }
-    if (minimal) return -1;
-    else return inutil;
-}
-
 int minimal3(vector<bool> DV, vector<int> NND) { 
     for(int i = 0; i < DV.size(); i++) {
         if(DV[i]) {
@@ -183,7 +121,6 @@ int minimal4(unordered_set<int> DUS, vector<int> NND) {
     }
     return -1;
 }
-
 
 //PRINTS GRAPH
 void print(vector<bool> DV) {
@@ -263,65 +200,41 @@ int main( int argc, char **argv ) {
     //VECTOR<SET<INT>> + VECTOR<BOOL>
 
     Timer timer;
-    b1 = dominador1(NND); //-1 no ha trobat cap vertex que no tingui influencia positiva
-    b2 = -1;
-    if(b1 == -1) b2 = minimal1(DV,NND); //-1 no ha trobat cap vertex que li sobri un vertex del set dominant
-
-    if(b1 == -1) {
-        cout << "It's a Positive Influence Dominator Set" << endl;
-        if(b2 == -1) cout << "It's also MINIMAL" << endl;
-        else cout << "It's NOT minimal! Redundant vertex: " << b2+1 << endl;
-    }
-    else cout << "It's NOT a Positive Influence Dominator Set!!!! " << b1+1 << " does not fulfill the requirements." << endl;
-    double ct1 = timer.elapsed_time(Timer::REAL);
-    cout << "time " << ct1 << endl;
-
-    //VECTOR<SET<INT>> + VECTOR<UNORDERED_SET<INT>>
-
-    b1 = dominador1(NND); //-1 no ha trobat cap vertex que no tingui influencia positiva
-    b2 = -1;
-    if(b1 == -1) b2 = minimal2(DUS,NND); //-1 no ha trobat cap vertex que li sobri un vertex del set dominant
-
-    if(b1 == -1) {
-        cout << "It's a Positive Influence Dominator Set" << endl;
-        if(b2 == -1) cout << "It's also MINIMAL" << endl;
-        else cout << "It's NOT minimal! Redundant vertex: " << b2+1 << endl;
-    }
-    else cout << "It's NOT a Positive Influence Dominator Set!!!! " << b1+1 << " does not fulfill the requirements." << endl;
-    double ct2 = timer.elapsed_time(Timer::REAL);
-    cout << "time " << ct2-ct1 << endl;
-
     //VECTOR<UNORDERED_SET<INT>> + VECTOR<BOOL>
 
     b1 = dominador2(NND); //-1 no ha trobat cap vertex que no tingui influencia positiva
-    b2 = -1;
-    if(b1 == -1) b2 = minimal3(DV,NND); //-1 no ha trobat cap vertex que li sobri un vertex del set dominant
-
-    if(b1 == -1) {
-        cout << "It's a Positive Influence Dominator Set" << endl;
-        if(b2 == -1) cout << "It's also MINIMAL" << endl;
-        else cout << "It's NOT minimal! Redundant vertex: " << b2+1 << endl;
+    if(not b1) {
+        cout << "No és dominador per començar" << endl;
+        return 0;
     }
-    else cout << "It's NOT a Positive Influence Dominator Set!!!! " << b1+1 << " does not fulfill the requirements." << endl;
-    double ct3 = timer.elapsed_time(Timer::REAL);
-    cout << "time " << ct3-ct2 << endl;
+
+    b2 = 0;
+    while(b2 != -1) {
+        b2 = minimal3(DV,NND); //-1 no ha trobat cap vertex que li sobri un vertex del set dominant
+        if(b2 != -1) {
+            DV[b2] = false;
+            DUS.erase(b2);
+            auto itr = neighborsUS[b2].begin();
+            while(itr != neighborsUS[b2].end()) {
+                NND[*itr]--;
+                itr++;
+            }
+            cout << b2+1 << " fora!";
+        }
+    }
+    double ct = timer.elapsed_time(Timer::REAL);
     
-    //VECTOR<UNORDERED_SET<INT>> + VECTOR<UNORDERED_SET<INT>>
-
-    b1 = dominador2(NND); //-1 no ha trobat cap vertex que no tingui influencia positiva
-    b2 = -1;
-    if(b1 == -1) b2 = minimal4(DUS,NND); //-1 no ha trobat cap vertex que li sobri un vertex del set dominant
-
-    if(b1 == -1) {
-        cout << "It's a Positive Influence Dominator Set" << endl;
-        if(b2 == -1) cout << "It's also MINIMAL" << endl;
-        else cout << "It's NOT minimal! Redundant vertex: " << b2+1 << endl;
+    cout << endl << endl;
+    int count = 0;
+    for (int i = 0; i < N; ++i) {
+        if (DV[i]) {
+            cout << i << " ";
+            count++;
+        }
     }
-    else cout << "It's NOT a Positive Influence Dominator Set!!!! " << b1+1 << " does not fulfill the requirements." << endl;
-    double ct4 = timer.elapsed_time(Timer::REAL);
-    cout << "time " << ct4-ct3 << endl;
+    cout << endl << count << endl;
 
-
+    cout << "time " << ct << endl;
     return 0;
 }
 

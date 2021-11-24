@@ -1,0 +1,12 @@
+TEST0
+
+
+JAZZ:
+
+value 134.00    time 0.27
+
+
+
+ACTORS:
+
+(value 3208.00   time 1351.27) h2 només add

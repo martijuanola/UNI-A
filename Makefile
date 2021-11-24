@@ -27,6 +27,9 @@ all: ${TARGET}
 basic: src/basic/basic.cpp $(OBJS)
 	${CCC} ${CXXFLAGS} -o bin/$@ $^
 
+minimal3: src/basic/minimal3.cpp $(OBJS)
+	${CCC} ${CXXFLAGS} -o bin/$@ $^
+
 greedy: src/greedy/greedy.cpp $(OBJS)
 	${CCC} ${CXXFLAGS} -o bin/$@ $^
 

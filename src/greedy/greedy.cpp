@@ -45,8 +45,8 @@ int M;
 vector< unordered_set<int> > neighbors; //Dades inicials
 vector<int> NND; //Nombre de nodes
 vector<bool> D; //Vector de nodes dominants
-vector<bool> s; //altGreedy
-vector<unordered_set<int>> nodes;//altGreedy posicio del vector es valor del node, dins del set es els nodes que compleixen
+vector<bool> s; //altGreedy true si es un vertex amb influencia positiva
+vector<unordered_set<int>> nodes;//altGreedy posicio del vector es valor del node = suma dels s dels veins, dins del set es els nodes que compleixen
 int maxPos; //altGreedy indica quina es la posicio més alta del vector on hi ha vertexs
 vector<int> pos; //altGreedy indica quina es la posicio al vector de nodes de cada vertex (no ordenat)
 
@@ -88,6 +88,7 @@ int minNND(int n) {
 }
 
  /*------- DOMINADORS -------*/
+
 int dominador2(vector<int> NND) {
     for(int i = 0; i < neighbors.size(); i++) {
         if(NND[i] < minNND(neighbors[i].size())) return i;
@@ -128,6 +129,7 @@ int minimal3(vector<bool> DV, vector<int> NND) {
  /*------- ESCOLLIR VERTEXS -------*/
 
 int millorV() {
+    //Escull el vertex que no pertany al domini que tingui major nombre de veins sense influencia positiva
     int max = -1, maxPos = 0;
     for (int i = 0; i < N; ++i) {
         if (!D[i]) {
@@ -170,42 +172,47 @@ void eliminaVeins(int v) { //v abans formava part de de D i ara no
     }
 }
 
- /*------- GREEDIES -------*/
-
-void greedyNaive() {
-
-    while (not dominador()) {
-        int v = millorV();
-        D[v] = true;
-        afegeixVeins(v);
-    }
-}
-
-void greedyMinimal() {
-    int b2 = 0;
-    while (b2 != -1) {
-        b2 = minimal3(D,NND); //-1 no ha trobat cap vertex que li sobri un vertex del set dominant
-        if (b2 != -1) {
-            D[b2] = false;
-            eliminaVeins(b2);
-        }
-    }
-}
-
- /*------- MAIN -------*/
-
 //s'ha de recalcular g pel vertex v
 void g(int v) {
-    
+    int res = s[v]; //passa de bool a int
+
+    auto itr = neighbors[v].begin();
+    while (itr != neighbors[v].end()) {
+        res += 1 - s[*itr];
+        ++itr;
+    }
+    if (res != pos[v]) {
+        if (res > maxPos) maxPos = res;
+        //El canviem de llista
+        nodes[pos[v]].erase(v);
+        nodes[res].insert(v);
+        pos[v] = res;
+    }
 }
 
-void actualitzaDades(int v) { //v abans no formava part de D i ara si
-    unordered_set<int>::iterator itr = neighbors[v].begin();
-    s[v] = true;
 
+void printG() {
+    for (int i = 0; i < nodes.size(); ++i) {
+        cout << i << "\t";
+        auto it = nodes[i].begin();
+        if (it == nodes[i].end()) cout << "BUIT";
+        while (it != nodes[i].end()) {
+            cout << *it+1 << ", ";
+            ++it;
+        }
+        cout << endl;
+    }
+    cout << endl;
+}
+
+
+void actualitzaDades(int v) { //v abans no formava part de D i ara si
+    s[v] = (NND[v] >= minNND(neighbors[v].size()));
+
+    unordered_set<int>::iterator itr = neighbors[v].begin();
     while (itr != neighbors[v].end()) {
         ++NND[*itr];
-        if (NND[*itr] >= minNND(neighbors[*itr].size())) s[v] = true;
+        s[*itr] = (NND[*itr] >= minNND(neighbors[*itr].size())); //Si arriba a ser true mai tornara a ser false
         ++itr;
     }
 
@@ -232,16 +239,137 @@ void actualitzaDades(int v) { //v abans no formava part de D i ara si
         }
         ++itr;
     }
+    if (nodes[maxPos].empty()) {
+        bool found = false;
+        int i = maxPos;
+        while (not found) {
+            if (not nodes[i].empty()) {
+                maxPos = i;
+                found = true;
+            }
+            --i;
+        }
+    }
+}
+ /*------- GREEDIES -------*/
+
+void g2(int v) {
+    int res = s[v]; //passa de bool a int
+
+    auto itr = neighbors[v].begin();
+    while (itr != neighbors[v].end()) {
+        res += 1 - s[*itr];
+        ++itr;
+    }
+    if (res != pos[v]) {
+        if (res > maxPos) maxPos = res;
+        //El canviem de llista
+        nodes[pos[v]].erase(v);
+        nodes[res].insert(v);
+        pos[v] = res;
+    }
+}
+
+void actualitzaDadesOpt(int v) { //v abans no formava part de D i ara si
+
+    //Actualitzar nombre de veins que pertanyen al NND i s
+    unordered_set<int>::iterator itr = neighbors[v].begin();
+    while (itr != neighbors[v].end()) {
+        ++NND[*itr];
+        s[*itr] = (NND[*itr] >= minNND(neighbors[*itr].size())); //Si arriba a ser true mai tornara a ser false
+        ++itr;
+    }
+
+    vector<bool> calculat(N, false); //Comprova quins vertexs ja han siguit calculats o no s'han de calculat g()
+    calculat[v] = true;
+
+    itr = neighbors[v].begin();
+    while (itr != neighbors[v].end()) {
+
+        if (not D[*itr] and not calculat[*itr]) {
+
+            g2(*itr); //recalcular g pels veins
+            calculat[*itr] = true;
+            unordered_set<int>::iterator itr2 = neighbors[*itr].begin();
+
+            while (itr2 != neighbors[*itr].end()) { //Recorrer el graf en 2 de profunditat
+                if (not D[*itr2] && not calculat[*itr2]){
+                    g2(*itr2);
+                    calculat[*itr2] = true;
+                }
+                ++itr2;
+            }
+
+        }
+        ++itr;
+    }
+    if (nodes[maxPos].empty()) {
+        bool found = false;
+        int i = maxPos;
+        while (not found) {
+            if (not nodes[i].empty()) {
+                maxPos = i;
+                found = true;
+            }
+            --i;
+        }
+    }
+}
+ /*------- GREEDIES -------*/
+
+
+void greedyNaive() {
+
+    while (not dominador()) {
+        int v = millorV();
+        D[v] = true;
+        afegeixVeins(v);
+    }
+}
+
+void greedyMinimal() {
+    int b2 = 0;
+    while (b2 != -1) {
+        b2 = minimal3(D,NND); //-1 no ha trobat cap vertex que li sobri un vertex del set dominant
+        if (b2 != -1) {
+            D[b2] = false;
+            eliminaVeins(b2);
+        }
+    }
 }
 
 void altGreedy() {
     while (not dominador()) {
+
         auto it = nodes[maxPos].begin(); //Possible random 
+        int v = *it;
         nodes[maxPos].erase(it);
-        D[*it] = true; //l'afegim al set dominant
-        actualitzaDades(*it);
+
+        pos[v] = -1;
+        D[v] = true; //l'afegim al set dominant
+        actualitzaDades(v);
     }
 }
+
+
+void greedyNaiveOpt() { //vol els mateixos resultats que greedynaive
+    while (not dominador()) {
+
+        auto it = nodes[maxPos].begin(); //Possible random 
+        int v = *it;
+        while (it != nodes[maxPos].end()) {
+            if (neighbors[*it].size() > neighbors[v].size()) v = *it;
+            ++it;
+        }
+        nodes[maxPos].erase(v);
+
+        pos[v] = -1;
+        D[v] = true; //l'afegim al set dominant
+        actualitzaDadesOpt(v);
+    }
+}
+
+ /*------- MAIN -------*/
 
 int main( int argc, char **argv ) {
 
@@ -280,19 +408,45 @@ int main( int argc, char **argv ) {
         for (int i = 0; i < N; ++i) {
             if (neighbors[i].size() > maxSize) maxSize = neighbors[i].size();
         }
-        ++maxSize;
+        maxSize += 2; //+1 per que el node també conta 1 i +1 pel 0
         nodes = vector<unordered_set<int>>(maxSize);
         cout << "tamany nodes: " << nodes.size() << endl;
-        maxPos = 0;
 
         D = vector<bool>(N, false); //Comença amb cap node a la solucio
         s = vector<bool>(N, false); //Tots començen a false (0)
-        pos = vector<int>(N, 0); //Tots els nodes estan a la posicio 0 del vector de nodes
+        pos = vector<int>(N, 0);
 
+        maxPos = 0;
         for (int i = 0; i < N; ++i) {
-            nodes[0].insert(i);
+            int p = neighbors[i].size();
+            if (p > maxPos) maxPos = p;
+            nodes[p].insert(i);
+
+            pos[i] = p;
         }
         altGreedy();
+    }
+    else if (algorisme == 3) {
+        int maxSize = 0;
+        for (int i = 0; i < N; ++i) {
+            if (neighbors[i].size() > maxSize) maxSize = neighbors[i].size();
+        }
+        maxSize += 2; //+1 per que el node també conta 1 i +1 pel 0
+        nodes = vector<unordered_set<int>>(maxSize);
+        cout << "tamany nodes: " << nodes.size() << endl;
+
+        D = vector<bool>(N, false); //Comença amb cap node a la solucio
+        s = vector<bool>(N, false); //Tots començen a false (0)
+        pos = vector<int>(N, 0);
+
+        maxPos = 0;
+        for (int i = 0; i < N; ++i) {
+            int p = neighbors[i].size();
+            if (p > maxPos) maxPos = p;
+            nodes[p].insert(i);
+
+            pos[i] = p;
+        }        greedyNaiveOpt();
     }
 
 
@@ -301,6 +455,7 @@ int main( int argc, char **argv ) {
     for (int i = 0; i < N; ++i) if (D[i]) {
         ++count;
     }
+    cout << "N: " << N << endl;
     cout << "Number of vertexs in solution: " << count << endl;
 
 
@@ -313,12 +468,12 @@ int main( int argc, char **argv ) {
     }
     else cout << "It's NOT a Positive Influence Dominator Set!!!! " << b1 << " does not fulfill the requirements." << endl;
     cout << endl << endl;
-    /*
+    
     for (int i = 0; i < N; ++i) {
         if (D[i]) cout << "(D) ";
-        cout << "\t" << i << endl;
+        cout << "\t" << i+1 << endl;
     }
-    */
+    
 
     //double ct = timer.elapsed_time(Timer::VIRTUAL);
     //cout << "value " << results << "\ttime " << ct << endl;

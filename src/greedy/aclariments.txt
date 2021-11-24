@@ -1,0 +1,9 @@
+parametres:
+	-i indicar el path (recomenat fitxers del folder data ../../data/<fitxer>.txt)
+	-a indicar l'algorisme que s'utilitza:
+		0
+		1
+		2
+		3
+		4
+		5

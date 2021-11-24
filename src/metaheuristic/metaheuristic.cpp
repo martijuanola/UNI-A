@@ -1,7 +1,7 @@
 /***************************************************************************
-    metaheuristic.cpp 
+    metaheuristic.cpp
     (C) 2021 by C. Blum & M. Blesa
-    
+
  ***************************************************************************/
 
 /***************************************************************************
@@ -54,7 +54,7 @@ double time_limit = 3200.0;
 // number of applications of the metaheuristic
 int n_apps = 1;
 
-// dummy parameters as examples for creating command line parameters 
+// dummy parameters as examples for creating command line parameters
 // (see function read_parameters(...))
 int dummy_integer_parameter = 0;
 int dummy_double_parameter = 0.0;
@@ -75,18 +75,18 @@ void read_parameters(int argc, char **argv) {
     int iarg = 1;
     while (iarg < argc) {
         if (strcmp(argv[iarg],"-i") == 0) inputFile = argv[++iarg];
-        // reading the computation time limit 
+        // reading the computation time limit
         // from the command line (if provided)
-        else if (strcmp(argv[iarg],"-t") == 0) time_limit = atoi(argv[++iarg]); 
-        // reading the number of applications of the metaheuristic 
+        else if (strcmp(argv[iarg],"-t") == 0) time_limit = atoi(argv[++iarg]);
+        // reading the number of applications of the metaheuristic
         // from the command line (if provided)
-        else if (strcmp(argv[iarg],"-n_apps") == 0) n_apps = atoi(argv[++iarg]); 
-        // example for creating a command line parameter 
+        else if (strcmp(argv[iarg],"-n_apps") == 0) n_apps = atoi(argv[++iarg]);
+        // example for creating a command line parameter
         // param1 -> integer value is stored in dummy_integer_parameter
         else if (strcmp(argv[iarg],"-param1") == 0) {
-            dummy_integer_parameter = atoi(argv[++iarg]); 
+            dummy_integer_parameter = atoi(argv[++iarg]);
         }
-        // example for creating a command line parameter 
+        // example for creating a command line parameter
         // param2 -> double value is stored in dummy_double_parameter
         else if (strcmp(argv[iarg],"-param2") == 0) {
             dummy_double_parameter = atof(argv[++iarg]);
@@ -103,16 +103,16 @@ Main function
 int main( int argc, char **argv ) {
 
     read_parameters(argc,argv);
-    
+
     // setting the output format for doubles to 2 decimals after the comma
     std::cout << std::setprecision(2) << std::fixed;
 
-    // initializing the random number generator. A random number 
+    // initializing the random number generator. A random number
     // between 0 and 1 is obtained with: double rnum = rnd->next();
     rnd = new Random((unsigned) time(&t));
     rnd->next();
 
-    // vectors for storing the result and the computation time 
+    // vectors for storing the result and the computation time
     // obtained by the <n_apps> applications of the metaheuristic
     vector<double> results(n_apps, std::numeric_limits<int>::max());
     vector<double> times(n_apps, 0.0);
@@ -134,43 +134,103 @@ int main( int argc, char **argv ) {
     }
     indata.close();
 
+    //GLOBAL VARIABLES AND TYPES FOR THE METAHEURISTIC
+    typedef vector<bool> Gene;
+    typedef vector<Gene> Population;
+    typedef vector<int>  Pop_Fitness;
+
+    int POP_SIZE = 100;
+    float CROSS_PROB = 0.8;
+    float MUTATE_PROB = 0.2;
+    float GREEDY_RAND = 0.5;
+    int MAX_GEN = 100;
+
     // main loop over all applications of the metaheuristic
     for (int na = 0; na < n_apps; ++na) {
 
         // the computation time starts now
         Timer timer;
 
-        // Example for requesting the elapsed computation time at any moment: 
+        // Example for requesting the elapsed computation time at any moment:
         // double ct = timer.elapsed_time(Timer::VIRTUAL);
 
         cout << "start application " << na + 1 << endl;
 
         // HERE GOES YOUR METAHEURISTIC
 
-        // For implementing the metaheuristic you probably want to take profit 
-        // from the greedy heuristic and/or the local search method that you 
+        // For implementing the metaheuristic you probably want to take profit
+        // from the greedy heuristic and/or the local search method that you
         // already developed.
         //
-        // Whenever the best found solution is improved, first take the 
+        // Whenever the best found solution is improved, first take the
         // computation time as explained above. Say you store it in variable ct.
-        // Then, write the following to the screen: 
+        // Then, write the following to the screen:
         // cout << "value " << <value of the new best found solution>;
         // cout << "\ttime " << ct << endl;
         //
-        // Store the value of the new best found solution in vector results: 
+        // Store the value of the new best found solution in vector results:
         // results[na] = <value of the new best found solution>;
         //
-        // And store the current computation time (that is, the time measured 
-        // at that moment and stored in variable "ct") in vector times: 
+        // And store the current computation time (that is, the time measured
+        // at that moment and stored in variable "ct") in vector times:
         // times[na] = ct;
         //
-        // Stop the execution of the metaheuristic 
+        // Stop the execution of the metaheuristic
         // once the time limit "time_limit" is reached.
+        int FITNESS_TOTAL = 0;
+        int FITNESS_ANT = 1;
+
+        Population pop(POP_SIZE, Gene(n_of_nodes));
+        Pop_Fitness pop_fitness(POP_SIZE, -1);
+        Gene best(n_of_nodes);
+        int best_fitness = 0;
+
+        generate_pop_ini(pop&, pop_fitness&, best&, best_fitness&);
+
+        for (int generation = 0;
+          //we iterate up to the maximum generation or...
+          generation < MAX_GEN and
+          //until our total fitness does not improve or...
+          FITNESS_TOTAL < FITNESS_ANT and
+          //until we reach the time limit.
+          timer.elapsed_time(Timer::VIRTUAL) < time_limit;
+            ++generation) {
+
+              FITNESS_TOTAL = 0;
+
+              Population pop_new(POP_SIZE, Gene(n_of_nodes));
+              Pop_Fitness pop_fitness_new(POP_SIZE, -1);
+              for (int child_idx = 0; child_idx < POP_SIZE and timer.elapsed_time(Timer::VIRTUAL);
+              ++child_idx) {
+
+                Gene x = selection(pop&);
+                Gene y = selection(pop&);
+
+                Gene child = cross(x,y);
+                //if MUTATE_PROB mutate child;
+
+                pop_new[child_idx] = child;
+
+                int child_fitness = fitness(const child&);
+                pop_fitness_new[child_idx] = child_fitness;
+                FITNESS_TOTAL += child_fitness;
+                }
+            }
+            double ct = timer.elapsed_time(Timer::VIRTUAL);
+
+            int MDPI_size = 0;
+            for (int i = 0; i < n_of_nodes; ++i) MDPI_size += best[i];
+
+            cout << "value " << MDPI_size;
+            cout << "\ttime " << ct << endl;
+
+            results[na] = MDPI_size;
+            times[na] = ct;
 
         cout << "end application " << na + 1 << endl;
     }
 
-    // calculating the average of the results and computation times, 
+    // calculating the average of the results and computation times,
     // and their standard deviations, and write them to the screen
     double r_mean = 0.0;
     int r_best = std::numeric_limits<int>::max();
@@ -200,4 +260,3 @@ int main( int argc, char **argv ) {
     cout << r_best << "\t" << r_mean << "\t" << rsd << "\t";
     cout << t_mean << "\t" << tsd << endl;
 }
-

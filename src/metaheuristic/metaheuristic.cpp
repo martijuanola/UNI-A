@@ -116,6 +116,17 @@ void read_parameters(int argc, char **argv) {
 }
 
 //GREEDY FUNCTIONS FOR GENERATING INITIAL SOLUTIONS. (Jaume made them)
+int minNND(int n) {
+    return ceil(float(n)/2);
+}
+
+bool dominador() {
+    for(int i = 0; i < N; i++) {
+        if(NND[i] < float(neighbors[i].size())/float(2)) return false;
+    }
+    return true;
+}
+
 void g(int v) {
     int res = 0; //passa de bool a int
 

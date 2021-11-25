@@ -40,6 +40,9 @@ greedy: src/greedy/greedy.cpp $(OBJS)
 local_search: src/local_search/local_search.cpp $(OBJS)
 	${CCC} ${CXXFLAGS} -o bin/$@ $^
 
+local_search2: src/local_search/local_search2.cpp $(OBJS)
+	${CCC} ${CXXFLAGS} -o bin/$@ $^
+
 metaheuristic: src/metaheuristic/metaheuristic.cpp $(OBJS)
 	${CCC} ${CXXFLAGS} -o src/metaheuristic/$@ $^
 

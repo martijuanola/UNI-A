@@ -115,7 +115,7 @@ int minimal3(const vector<bool>& DV, const vector<int>& NND) {
 //PRE: SI indica quina solució inicial utilitzar
 //POST: tots els nodes pertanyen a D i per tant tots els veins d'un node també
 vector<bool> solucio_inicial(vector<int>& NND) {
-    
+    long l = 192841;
     vector<bool> s(N,false);
     NND = vector<int> (N,0);
     
@@ -238,106 +238,6 @@ void opSWAP(vector<bool>& v, vector<int>& NND, int posND, int posD) {
     }
 }
 
-vector<bool> simulatedAnnealing() {
-    //variables pel SA
-    int T = 15000;
-    int iT = 10;
-    int k = 3;
-    double l = 0.05;
-
-    /*
-     *3873    3922.33 50.66   7.03    0.24
-     *int T = 15000;
-    int iT = 10;
-    int k = 3;
-    double l = 0.05;
-    */
-
-    vector<string> ops(0);
-    vector<int> NND;
-    vector<bool> s = solucio_inicial(NND);
-    double h = 0;
-
-    while(T > 0) {
-        //cout << "Temperatura " << T << endl;
-
-        for(int si = 0; si < iT; si++) {
-            //cout << "SubIteration " << si << endl;
-            //nou fill
-            float r1 = rnd->next(); // per l'operació
-            float r2 = rnd->next(); //element de D
-            float r3 = rnd->next(); //element de ND
-            int r2i = int(r2*N);
-            int r3i = int(r3*N);
-            while(not s[r2i] and ND(s) != N) { r2i = (r2i+1)%N;}
-            while(s[r3i] and ND(s) != N) { r3i = (r3i+1)%N;}
-
-            vector<bool> auxS = s;
-            vector<int> auxNND = NND;
-            string str;
-            double auxH = 0;
-
-            float nops = 3.0;
-
-            if(r1 < 1.0/nops) {
-                opADD(auxS,auxNND,r3i);
-                auxH = heruistic(auxS,auxNND);
-                str = "H" + to_string(auxH) + "\tADD\t ND=" + to_string(ND(auxS)) + "\tElement " + to_string(r3i);
-            }
-            else if(r1 < 2.0/nops) {
-                opREMOVE(auxS,auxNND,r2i);
-                auxH = heruistic(auxS,auxNND);
-                str = "H" + to_string(auxH) + "\tREMOVE\t ND=" + to_string(ND(auxS)) + "\tElement " + to_string(r2i);
-            }
-            else {
-                opSWAP(auxS,auxNND,r3i,r2i);
-                auxH = heruistic(auxS,auxNND);
-                str = "H" + to_string(auxH) + "\tSWAP\t ND=" + to_string(ND(auxS)) + "\tElement of D " + to_string(r2i) + " with element " + to_string(r3i);
-            }
-
-            double difH = auxH - h;
-
-            if(difH > 0) {//millora 
-                NND = auxNND;
-                s = auxS;
-                h = auxH;
-                ops.push_back(str);
-                cout << T << ":\t" << "ND=" << ND(s) << "\t" << str << endl ;//<< endl ;
-            }
-            else {//igual o pitjor
-                float p = rnd->next();
-                float P = exp(difH/(k*exp(-l*T)));
-                if(p <= P) { // es fa el canvi igualment
-                    NND = auxNND;
-                    s = auxS;
-                    h = auxH;
-                    ops.push_back(str);
-                    cout << T << ":\t" << "ND=" << ND(s) << "\t" << str << endl ;//<< endl ;
-                }
-            }
-        }
-        T--;
-    }
-
-
-    //error en algun lloc
-    if(dominador(NND)) cout << "THE D IS A POSITIVE DOMINATOR SET" << endl;
-    else cout << "THE D IS NOT VALID" << endl;
-
-    //print results
-    if(false) {
-        if(ops.size() != 0) {
-            cout << "OPERATIONS PERFORMED:" << endl;
-            for(int i = 0; i < ops.size(); i++) cout << ops[i] << endl;
-        }
-        else cout << "NO OPERATIONS WERE PERFORDMED" << endl;
-    }
-    
-    return s;
-
-
-}
-
 //PRE: graf inicialitzat
 //POST: retorna una solució(paràmetres H, O i SI)
 vector<bool> hillClimbing() {
@@ -413,7 +313,7 @@ vector<bool> hillClimbing() {
         }
 
         if(millora) {
-            cout << iteracions << ":\t" << "ND=" << ND(bestS) << "\t" << str << endl ;//<< endl ;
+            cout << iteracions << ":\t" << "ND=" << ND(bestS) << "\t" << str << endl;// << endl ;
             s = bestS;
             h = bestH;
             NND = bestNND;
@@ -485,8 +385,7 @@ int main( int argc, char **argv ) {
         Timer timer;
 
         cout << "------------------------------------------" << endl;
-        //vector<bool> solution = hillClimbing();
-        vector<bool> solution = simulatedAnnealing();
+        vector<bool> solution = hillClimbing();
         cout << "------------------------------------------" << endl;
 
         results[na] = ND(solution);

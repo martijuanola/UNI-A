@@ -1,0 +1,2 @@
+Per utilitzar aquest algorisme (2) es necessari afegir una profunditat amb -p. Per un valor bo, escollir 2 per un valor rapid escollir 1
+tamany nodes: 668

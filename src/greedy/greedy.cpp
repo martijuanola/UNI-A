@@ -18,7 +18,6 @@
 #endif
 
 #include "../Timer.h"
-#include <vector>
 #include <string>
 #include <stdio.h>
 #include <stdlib.h>
@@ -49,13 +48,14 @@ vector<bool> s; //altGreedy true si es un vertex amb influencia positiva
 vector<unordered_set<int>> nodes;//altGreedy posicio del vector es valor del node = suma dels s dels veins, dins del set es els nodes que compleixen
 int maxPos; //altGreedy indica quina es la posicio més alta del vector on hi ha vertexs
 vector<int> pos; //altGreedy indica quina es la posicio al vector de nodes de cada vertex (no ordenat)
+vector<bool> calculat; //altGreedy per indicar quins vertexs ja s'han calculat
 
 // string for keeping the name of the input file
 string inputFile;
 
-// dummy parameters as examples for creating command line parameters 
-// see function read_parameters(...)
+//Parametres
 int algorisme = 0;
+int profunditat; //altGreedy indica la profunditat de les actualitzacions del graf, quan més gran millors resultats però pitjor rendiment
 
 inline int stoi(string &s) {
 
@@ -78,6 +78,9 @@ void read_parameters(int argc, char **argv) {
         //-> integer value is stored in dummy_integer_parameter
         else if (strcmp(argv[iarg],"-a")==0) 
             algorisme = atoi(argv[++iarg]); 
+
+        else if (strcmp(argv[iarg],"-p")==0) 
+            profunditat = atoi(argv[++iarg]); 
             
         iarg++;
     }
@@ -126,6 +129,42 @@ int minimal3(vector<bool> DV, vector<int> NND) {
     return -1;
 }
 
+/*------- PRINTS -------*/
+
+void printG() {
+    for (int i = 0; i < nodes.size(); ++i) {
+        cout << i << "\t";
+        auto it = nodes[i].begin();
+        if (it == nodes[i].end()) cout << "BUIT";
+        while (it != nodes[i].end()) {
+            cout << *it+1 << ", ";
+            ++it;
+        }
+        cout << endl;
+    }
+    cout << endl;
+}
+
+void printResult() {
+    int count = 0;
+    for (int i = 0; i < N; ++i) {
+        if (D[i]) ++count;
+    }
+    cout << "N: " << N << endl;
+    cout << "Number of vertexs in solution: " << count << endl;
+
+
+    int b2 = minimal3(D,NND);
+    int b1 = dominador2(NND);
+    if(b1 == -1) {
+        cout << "It's a Positive Influence Dominator Set" << endl;
+        if(b2 == -1) cout << "It's also MINIMAL" << endl;
+        else cout << "It's NOT minimal! Redundant vertex: " << b2 << endl;
+    }
+    else cout << "It's NOT a Positive Influence Dominator Set!!!! " << b1 << " does not fulfill the requirements." << endl;
+    cout << endl << endl;
+}
+
  /*------- ESCOLLIR VERTEXS -------*/
 
 int millorV() {
@@ -172,16 +211,15 @@ void eliminaVeins(int v) { //v abans formava part de de D i ara no
     }
 }
 
-//s'ha de recalcular g pel vertex v
 void g(int v) {
-    int res = s[v]; //passa de bool a int
+    int res = 0; //passa de bool a int
 
     auto itr = neighbors[v].begin();
     while (itr != neighbors[v].end()) {
         res += 1 - s[*itr];
         ++itr;
     }
-    if (res != pos[v]) {
+    if (pos[v] != -1 and res != pos[v]) {
         if (res > maxPos) maxPos = res;
         //El canviem de llista
         nodes[pos[v]].erase(v);
@@ -190,23 +228,21 @@ void g(int v) {
     }
 }
 
-
-void printG() {
-    for (int i = 0; i < nodes.size(); ++i) {
-        cout << i << "\t";
-        auto it = nodes[i].begin();
-        if (it == nodes[i].end()) cout << "BUIT";
-        while (it != nodes[i].end()) {
-            cout << *it+1 << ", ";
-            ++it;
+void recalculG(int v, int prof) {
+    if (prof == 0) return;
+    unordered_set<int>::iterator itr = neighbors[v].begin();
+    while (itr != neighbors[v].end()) {
+        if (not calculat[*itr]) {
+            g(*itr); //recalcular g pels veins
+            calculat[*itr] = true;
+            recalculG(*itr, prof-1);
         }
-        cout << endl;
+        ++itr;
     }
-    cout << endl;
 }
 
-
 void actualitzaDades(int v) { //v abans no formava part de D i ara si
+
     s[v] = (NND[v] >= minNND(neighbors[v].size()));
 
     unordered_set<int>::iterator itr = neighbors[v].begin();
@@ -216,29 +252,10 @@ void actualitzaDades(int v) { //v abans no formava part de D i ara si
         ++itr;
     }
 
-    vector<bool> calculat(N, false); //Comprova quins vertexs ja han siguit calculats o no s'han de calculat g()
+    calculat = vector<bool> (N, false); //Comprova quins vertexs ja han siguit calculats o no s'han de calculat g()
     calculat[v] = true;
+    recalculG(v, profunditat);
 
-    itr = neighbors[v].begin();
-    while (itr != neighbors[v].end()) {
-
-        if (not D[*itr] and not calculat[*itr]) {
-
-            g(*itr); //recalcular g pels veins
-            calculat[*itr] = true;
-            unordered_set<int>::iterator itr2 = neighbors[*itr].begin();
-
-            while (itr2 != neighbors[*itr].end()) { //Recorrer el graf en 2 de profunditat
-                if (not D[*itr2] && not calculat[*itr2]){
-                    g(*itr2);
-                    calculat[*itr2] = true;
-                }
-                ++itr2;
-            }
-
-        }
-        ++itr;
-    }
     if (nodes[maxPos].empty()) {
         bool found = false;
         int i = maxPos;
@@ -251,70 +268,7 @@ void actualitzaDades(int v) { //v abans no formava part de D i ara si
         }
     }
 }
- /*------- GREEDIES -------*/
 
-void g2(int v) {
-    int res = s[v]; //passa de bool a int
-
-    auto itr = neighbors[v].begin();
-    while (itr != neighbors[v].end()) {
-        res += 1 - s[*itr];
-        ++itr;
-    }
-    if (res != pos[v]) {
-        if (res > maxPos) maxPos = res;
-        //El canviem de llista
-        nodes[pos[v]].erase(v);
-        nodes[res].insert(v);
-        pos[v] = res;
-    }
-}
-
-void actualitzaDadesOpt(int v) { //v abans no formava part de D i ara si
-
-    //Actualitzar nombre de veins que pertanyen al NND i s
-    unordered_set<int>::iterator itr = neighbors[v].begin();
-    while (itr != neighbors[v].end()) {
-        ++NND[*itr];
-        s[*itr] = (NND[*itr] >= minNND(neighbors[*itr].size())); //Si arriba a ser true mai tornara a ser false
-        ++itr;
-    }
-
-    vector<bool> calculat(N, false); //Comprova quins vertexs ja han siguit calculats o no s'han de calculat g()
-    calculat[v] = true;
-
-    itr = neighbors[v].begin();
-    while (itr != neighbors[v].end()) {
-
-        if (not D[*itr] and not calculat[*itr]) {
-
-            g2(*itr); //recalcular g pels veins
-            calculat[*itr] = true;
-            unordered_set<int>::iterator itr2 = neighbors[*itr].begin();
-
-            while (itr2 != neighbors[*itr].end()) { //Recorrer el graf en 2 de profunditat
-                if (not D[*itr2] && not calculat[*itr2]){
-                    g2(*itr2);
-                    calculat[*itr2] = true;
-                }
-                ++itr2;
-            }
-
-        }
-        ++itr;
-    }
-    if (nodes[maxPos].empty()) {
-        bool found = false;
-        int i = maxPos;
-        while (not found) {
-            if (not nodes[i].empty()) {
-                maxPos = i;
-                found = true;
-            }
-            --i;
-        }
-    }
-}
  /*------- GREEDIES -------*/
 
 
@@ -341,7 +295,7 @@ void greedyMinimal() {
 void altGreedy() {
     while (not dominador()) {
 
-        auto it = nodes[maxPos].begin(); //Possible random 
+        auto it = nodes[maxPos].begin(); 
         int v = *it;
         nodes[maxPos].erase(it);
 
@@ -351,28 +305,29 @@ void altGreedy() {
     }
 }
 
-
-void greedyNaiveOpt() { //vol els mateixos resultats que greedynaive
+void greedyRandom() { //Igual que altGreedy pero amb aleatorietat
     while (not dominador()) {
+        auto it = nodes[maxPos].begin(); 
+        int rando = rand()%nodes[maxPos].size();
 
-        auto it = nodes[maxPos].begin(); //Possible random 
-        int v = *it;
-        while (it != nodes[maxPos].end()) {
-            if (neighbors[*it].size() > neighbors[v].size()) v = *it;
+        while (rando > 0) {
             ++it;
+            --rando;
         }
-        nodes[maxPos].erase(v);
+
+        int v = *it;
+        nodes[maxPos].erase(it);
 
         pos[v] = -1;
         D[v] = true; //l'afegim al set dominant
-        actualitzaDadesOpt(v);
+        actualitzaDades(v);
     }
 }
 
  /*------- MAIN -------*/
 
 int main( int argc, char **argv ) {
-
+    profunditat = -1;
     read_parameters(argc,argv);
     std::cout << std::setprecision(10) << std::fixed;
 
@@ -393,90 +348,86 @@ int main( int argc, char **argv ) {
     }
     indata.close();
 
-    //Timer timer;
-
+    Timer timer;
     if (algorisme == 0) {
         D = vector<bool>(N, false); //Comença amb cap node a la solucio
         greedyNaive();
+        printResult();
     }
     else if (algorisme == 1) {
         D = vector<bool>(N, true); //Comença amb tots els nodes a la solucio
         greedyMinimal();
+        printResult();
     }
     else if (algorisme == 2) {
-        int maxSize = 0;
-        for (int i = 0; i < N; ++i) {
-            if (neighbors[i].size() > maxSize) maxSize = neighbors[i].size();
+        if (profunditat == -1) {
+            cout << "Per utilitzar aquest algorisme (2) es necessari afegir una profunditat amb -p." << endl;
+            cout << "Elegir el parametre depenent del resultat desitjat:" << endl;
+            cout << "\t· 1 per un resultat molt rapid pero amb un 15% - 25% més de vertexs" << endl;
+            cout << "\t· 2 per un resultat rapid i bastant bo" << endl;
+            cout << "\t· >10*N per un resultat semblant al algorisme 0" << endl;
         }
-        maxSize += 2; //+1 per que el node també conta 1 i +1 pel 0
-        nodes = vector<unordered_set<int>>(maxSize);
-        cout << "tamany nodes: " << nodes.size() << endl;
+        else {
+            int maxSize = 0;
+            for (int i = 0; i < N; ++i) {
+                if (neighbors[i].size() > maxSize) maxSize = neighbors[i].size();
+            }
+            maxSize += 2; //+1 per que el node també conta 1 i +1 pel 0
+            nodes = vector<unordered_set<int>>(maxSize);
 
-        D = vector<bool>(N, false); //Comença amb cap node a la solucio
-        s = vector<bool>(N, false); //Tots començen a false (0)
-        pos = vector<int>(N, 0);
+            D = vector<bool>(N, false); //Comença amb cap node a la solucio
+            s = vector<bool>(N, false); //Tots començen a false (0)
+            pos = vector<int>(N, 0);
 
-        maxPos = 0;
-        for (int i = 0; i < N; ++i) {
-            int p = neighbors[i].size();
-            if (p > maxPos) maxPos = p;
-            nodes[p].insert(i);
+            maxPos = 0;
+            for (int i = 0; i < N; ++i) {
+                int p = neighbors[i].size();
+                if (p > maxPos) maxPos = p;
+                nodes[p].insert(i);
 
-            pos[i] = p;
+                pos[i] = p;
+            }
+            altGreedy();
+            printResult();
         }
-        altGreedy();
     }
     else if (algorisme == 3) {
-        int maxSize = 0;
-        for (int i = 0; i < N; ++i) {
-            if (neighbors[i].size() > maxSize) maxSize = neighbors[i].size();
+        if (profunditat == -1) {
+            cout << "Per utilitzar aquest algorisme (3) es necessari afegir una profunditat amb -p." << endl;
+            cout << "Elegir el parametre depenent del resultat desitjat:" << endl;
+            cout << "\t· 1 per un resultat molt rapid pero amb un 15% - 25% més de vertexs" << endl;
+            cout << "\t· 2 per un resultat rapid i bastant bo" << endl;
+            cout << "\t· >10*N per un resultat semblant al algorisme 0" << endl;
         }
-        maxSize += 2; //+1 per que el node també conta 1 i +1 pel 0
-        nodes = vector<unordered_set<int>>(maxSize);
-        cout << "tamany nodes: " << nodes.size() << endl;
+        else {
+            srand(time(NULL));
+            int maxSize = 0;
+            for (int i = 0; i < N; ++i) {
+                if (neighbors[i].size() > maxSize) maxSize = neighbors[i].size();
+            }
+            maxSize += 2; //+1 per que el node també conta 1 i +1 pel 0
+            nodes = vector<unordered_set<int>>(maxSize);
 
-        D = vector<bool>(N, false); //Comença amb cap node a la solucio
-        s = vector<bool>(N, false); //Tots començen a false (0)
-        pos = vector<int>(N, 0);
+            D = vector<bool>(N, false); //Comença amb cap node a la solucio
+            s = vector<bool>(N, false); //Tots començen a false (0)
+            pos = vector<int>(N, 0);
 
-        maxPos = 0;
-        for (int i = 0; i < N; ++i) {
-            int p = neighbors[i].size();
-            if (p > maxPos) maxPos = p;
-            nodes[p].insert(i);
+            maxPos = 0;
+            for (int i = 0; i < N; ++i) {
+                int p = neighbors[i].size();
+                if (p > maxPos) maxPos = p;
+                nodes[p].insert(i);
 
-            pos[i] = p;
-        }        greedyNaiveOpt();
+                pos[i] = p;
+            }
+            greedyRandom();
+            printResult();
+        }
     }
 
 
-
-    int count = 0;
-    for (int i = 0; i < N; ++i) if (D[i]) {
-        ++count;
-    }
-    cout << "N: " << N << endl;
-    cout << "Number of vertexs in solution: " << count << endl;
-
-
-    int b2 = minimal3(D,NND);
-    int b1 = dominador2(NND);
-    if(b1 == -1) {
-        cout << "It's a Positive Influence Dominator Set" << endl;
-        if(b2 == -1) cout << "It's also MINIMAL" << endl;
-        else cout << "It's NOT minimal! Redundant vertex: " << b2 << endl;
-    }
-    else cout << "It's NOT a Positive Influence Dominator Set!!!! " << b1 << " does not fulfill the requirements." << endl;
-    cout << endl << endl;
-    
-    for (int i = 0; i < N; ++i) {
-        if (D[i]) cout << "(D) ";
-        cout << "\t" << i+1 << endl;
-    }
-    
-
-    //double ct = timer.elapsed_time(Timer::VIRTUAL);
-    //cout << "value " << results << "\ttime " << ct << endl;
+    double ct = timer.elapsed_time(Timer::VIRTUAL);
+    cout << "\ttime " << ct << endl;
 
 }
 

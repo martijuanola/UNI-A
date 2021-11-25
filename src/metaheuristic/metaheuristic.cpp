@@ -230,7 +230,7 @@ int fitness(const Gene & gen) {
     int fitness = 0;
 
     for (int vertex = 0; vertex < N; ++vertex) {
-        undordered_set<int> adjacents = neighbors[vertex];
+        unordered_set<int> adjacents = neighbors[vertex];
         
         int grau_half = adjacents.size();
         if(grau_half%2 == 1) ++grau_half;

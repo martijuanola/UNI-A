@@ -59,6 +59,15 @@ int n_apps = 1;
 int dummy_integer_parameter = 0;
 int dummy_double_parameter = 0.0;
 
+//GLOBAL VARIABLES AND TYPES FOR THE METAHEURISTIC
+typedef vector<bool> Gene;
+typedef vector<Gene> Population;
+typedef vector<int>  Pop_Fitness;
+
+int POP_SIZE = 100;
+double CROSS_PROB = 0.8;
+double MUTATE_PROB = 0.2;
+int MAX_GEN = 100;
 
 inline int stoi(string &s) {
 
@@ -134,17 +143,6 @@ int main( int argc, char **argv ) {
     }
     indata.close();
 
-    //GLOBAL VARIABLES AND TYPES FOR THE METAHEURISTIC
-    typedef vector<bool> Gene;
-    typedef vector<Gene> Population;
-    typedef vector<int>  Pop_Fitness;
-
-    int POP_SIZE = 100;
-    float CROSS_PROB = 0.8;
-    float MUTATE_PROB = 0.2;
-    float GREEDY_RAND = 0.5;
-    int MAX_GEN = 100;
-
     // main loop over all applications of the metaheuristic
     for (int na = 0; na < n_apps; ++na) {
 
@@ -177,15 +175,15 @@ int main( int argc, char **argv ) {
         //
         // Stop the execution of the metaheuristic
         // once the time limit "time_limit" is reached.
-        int FITNESS_TOTAL = 0;
-        int FITNESS_ANT = 1;
+        int FITNESS_TOTAL = std::numeric_limits<int>::max();
+        int FITNESS_ANT = std::numeric_limits<int>::max();
 
         Population pop(POP_SIZE, Gene(n_of_nodes));
         Pop_Fitness pop_fitness(POP_SIZE, -1);
         Gene best(n_of_nodes);
         int best_fitness = 0;
 
-        generate_pop_ini(pop&, pop_fitness&, best&, best_fitness&);
+        generate_pop_ini(pop, pop_fitness, best, best_fitness);
 
         for (int generation = 0;
           //we iterate up to the maximum generation or...
@@ -196,6 +194,7 @@ int main( int argc, char **argv ) {
           timer.elapsed_time(Timer::VIRTUAL) < time_limit;
             ++generation) {
 
+              FITNESS_ANT = FITNESS_TOTAL;
               FITNESS_TOTAL = 0;
 
               Population pop_new(POP_SIZE, Gene(n_of_nodes));
@@ -203,17 +202,24 @@ int main( int argc, char **argv ) {
               for (int child_idx = 0; child_idx < POP_SIZE and timer.elapsed_time(Timer::VIRTUAL);
               ++child_idx) {
 
-                Gene x = selection(pop&);
-                Gene y = selection(pop&);
+                Gene x = selection(pop);
+                Gene y = selection(pop);
 
-                Gene child = cross(x,y);
-                //if MUTATE_PROB mutate child;
+                Gene child = x;
+                if (rnd->next() <= CROSS_PROB) child = cross(x,y);
+                if (rnd->next() <= MUTATE_PROB) mutate(child);
 
                 pop_new[child_idx] = child;
 
-                int child_fitness = fitness(const child&);
+                int child_fitness = fitness(child);
                 pop_fitness_new[child_idx] = child_fitness;
                 FITNESS_TOTAL += child_fitness;
+
+                if(best_fitness > child_fitness) {
+                  best_fitness = child_fitness;
+                  best = child;
+                }
+
                 }
             }
             double ct = timer.elapsed_time(Timer::VIRTUAL);

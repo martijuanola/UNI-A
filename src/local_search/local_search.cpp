@@ -59,7 +59,7 @@ void read_parameters(int argc, char **argv) {
 
     while (iarg < argc) {
         if (strcmp(argv[iarg],"-i")==0) inputFile = argv[++iarg];               //input file
-        else if (strcmp(argv[iarg],"-n_apps")==0) n_apps = atoi(argv[++iarg]);  //iterations of algorithm
+        else if (strcmp(argv[iarg],"-n")==0) n_apps = atoi(argv[++iarg]);  //iterations of algorithm
         else if (strcmp(argv[iarg],"-h")==0) H = atoi(argv[++iarg]);            //heuristic function
         else if (strcmp(argv[iarg],"-o")==0) O = atof(argv[++iarg]);            //operators
         else if (strcmp(argv[iarg],"-si")==0) SI = atof(argv[++iarg]);          //initial solution/state
@@ -79,6 +79,7 @@ int minNND(int n) {
     return ceil(float(n)/2);
 }
 
+//POST: retorna el nombre d'elements de D
 int ND(const vector<bool>& v) {
     int count = 0;
     for(int i = 0; i < v.size(); i++) if(v[i]) count++;
@@ -114,11 +115,33 @@ int minimal3(const vector<bool>& DV, const vector<int>& NND) {
 //PRE: SI indica quina solució inicial utilitzar
 //POST: tots els nodes pertanyen a D i per tant tots els veins d'un node també
 vector<bool> solucio_inicial(vector<int>& NND) {
-    //if(SI == 0) {}
-    //else if(SI == 1) {}
-    //else {}
-    vector<bool> s(N,true);
-    for(int i = 0; i < N; i++) NND[i] = neighbors[i].size();
+    long l = 192841;
+    vector<bool> s(N,false);
+    NND = vector<int> (N,0);
+    
+    //aleatori totalment
+    if(SI == 1) {
+        while(dominador(NND) != -1) {
+            float n = rnd->next();
+            int pos = int(float(N)*n);
+            
+            while(s[pos]) pos = (pos+1)%N;
+
+            s[pos] = true;
+            for(auto itr = neighbors[pos].begin(); itr != neighbors[pos].end(); itr++) NND[*itr]++;
+        }
+    }
+
+    //
+    //elseif
+
+    //tot ple
+    else {
+        s = vector<bool> (N,true);
+        for(int i = 0; i < N; i++) NND[i] = neighbors[i].size();
+        return s;
+    }
+    
     return s;
 }
 
@@ -127,20 +150,45 @@ vector<bool> solucio_inicial(vector<int>& NND) {
 //PRE: H indica l'heurístic que es farà servir
 //POST: retorna el valor de l'heurístic H
 double heruistic(const vector<bool>& v, const vector<int>& NND) {
-    if(H == 1) { //no solució es descarta, torna nombre de nodes fora de D (PETA AMB SWAP)
+    //no solució es descarta, torna nombre de nodes fora de D
+    //PETA EL SWAP
+    if(H == 1) { 
         if(dominador(NND) != -1) return 0.0;
         else {
-            return double(ND(v));
+            return double(N - ND(v));
         }
     }
+    //no solució es descarta, torna diferència entre el minim
+    //PETA EL SWAP
     else if(H == 2) {
         if(dominador(NND) != -1) return 0.0;
         else { //diferència del minim i l'actual NND
-            double sum = 0;//el neighbors.size() és per fer que es maximitzi en comptes de minimitzar
+            double sum = 0;
             for(int i = 0; i < N; i++) sum += neighbors[i].size() - (NND[i] - minNND(neighbors[i].size()));
             return sum;
         }
     }
+
+    //maximitzar nombre d'arestes per vertex de D
+    else if(H == 3) {
+        if(dominador(NND) != -1) return 0.0;
+        else { //diferència del minim i l'actual NND
+            double sum = 0, count = 0;
+            for(int i = 0; i < N; i++){ 
+                if(v[i]) {
+                    sum += neighbors[i].size();
+                    count++;
+                }
+            }
+            return sum/count;
+        }
+    }
+
+    else if(H == 4) {
+
+    }
+
+    //que pugui sortir de l'espai i tornar prioritzant adds(ND)
     else return 0.0;
 }
 
@@ -202,7 +250,7 @@ vector<bool> hillClimbing() {
     //valors de l'estat actual
     vector<int> NND = vector<int>(N,0);
     vector<bool> s = solucio_inicial(NND);
-    //double h = 0;
+    double h = 0;
 
     //valors per detectar la fi de l'algorisme(local maximum)
     bool fi = false;
@@ -213,28 +261,40 @@ vector<bool> hillClimbing() {
         bool millora = false;
         vector<bool> bestS;
         vector<int> bestNND;
-        double bestH = 0;//h;
+        double bestH = h;
         string str;
 
         //utilitzar els operadors per trobar un fill millor
         //REMOVE (&& ADD)
         for(int i = 0; i < N; i++) {
-            if(not s[i]) continue; //aquí s'hi pot aplicar el ADD
             vector<bool> auxS = s;
             vector<int> auxNND = NND;
-            opREMOVE(auxS,auxNND,i);
-            double auxH = heruistic(auxS,auxNND);
-            if(auxH > bestH) {
-                bestH = auxH;
-                bestS = auxS;
-                bestNND = auxNND;
-                str = "H" + to_string(auxH) + "\tREMOVE\tElement " + to_string(i) + "\t D.size()=" + to_string(ND(auxS));
-                millora = true;
+            if(s[i]) {
+                opREMOVE(auxS,auxNND,i);
+                double auxH = heruistic(auxS,auxNND);
+                if(auxH > bestH) {
+                    bestH = auxH;
+                    bestS = auxS;
+                    bestNND = auxNND;
+                    str = "H" + to_string(auxH) + "\tREMOVE\t ND=" + to_string(ND(auxS)) + "\tElement " + to_string(i) ;
+                    millora = true;
+                }
+            }
+            else if(O == 1 or O == 3) {
+                opADD(auxS,auxNND,i);
+                double auxH = heruistic(auxS,auxNND);
+                if(auxH > bestH) {
+                    bestH = auxH;
+                    bestS = auxS;
+                    bestNND = auxNND;
+                    str = "H" + to_string(auxH) + "\tADD\t ND=" + to_string(ND(auxS)) + "\tElement " + to_string(i) ;
+                    millora = true;
+                }
             }
         }
 
         //SWAP
-        for(int i = 0; i < N; i++) { //iterar sobre els nodes que NO son de D
+        for(int i = 0; i < N and (O == 2 or O == 3); i++) { //iterar sobre els nodes que NO son de D
             if(s[i]) continue;
             for(int j = 0; j < N; j++) { //iterar sobre els nodes que son de D
                 if(not s[j]) continue;
@@ -246,7 +306,7 @@ vector<bool> hillClimbing() {
                     bestH = auxH;
                     bestS = auxS;
                     bestNND = auxNND;
-                    str = "H" + to_string(auxH) + "\tSWAP\tElement of D " + to_string(j) + " with element " + to_string(i) + "\t D.size()=" + to_string(ND(auxS));
+                    str = "H" + to_string(auxH) + "\tSWAP\t ND=" + to_string(ND(auxS)) + "\tElement of D " + to_string(j) + " with element " + to_string(i) ;
                     millora = true;
                 }
             }
@@ -255,9 +315,9 @@ vector<bool> hillClimbing() {
         if(millora) {
             cout << iteracions << ":\t" << "ND=" << ND(bestS) << "\t" << str << endl ;
             s = bestS;
+            h = bestH;
             NND = bestNND;
             ops.push_back(str);
-           // h = bestH;
         }
         else fi = true;
         iteracions++;
@@ -271,13 +331,12 @@ vector<bool> hillClimbing() {
     else cout << "THE D IS NOT VALID" << endl;
 
     //print results
-    if(fi) {
+    if(fi and false) {
         if(ops.size() != 0) {
             cout << "OPERATIONS PERFORMED:" << endl;
             for(int i = 0; i < ops.size(); i++) cout << ops[i] << endl;
         }
         else cout << "NO OPERATIONS WERE PERFORDMED" << endl;
-
     }
     
     return s;

@@ -3,7 +3,12 @@ TEST0
 
 JAZZ:
 
-value 134.00    time 0.27
+value 134.00    time 0.27 - PLE | H2 | REMOVE I ADD I SWAP
+value 134.00    time 0.03 - PLE | H2 | REMOVE I ADD
+value 129.00    time 0.29 - RND | H1 | REMOVE I ADD I SWAP
+value 100.00    time 0.02 - PLE | H1 | REMOVE I ADD 
+value 95.00     time 0.87 - PLE | H1 | REMOVE I ADD I SWAP
+value 87.00     time 0.61 - RND | H3 | REMOVE I ADD I SWAP 
 
 
 

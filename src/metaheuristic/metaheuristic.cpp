@@ -274,6 +274,7 @@ Gene cross(const Gene & x, const Gene & y) {
         else aux[i] = y[i];
     }
 
+    return aux;
 }
 
 void mutate(Gene & child) {
@@ -281,11 +282,11 @@ void mutate(Gene & child) {
     child[mutation] = not child[mutation];
 }
 
-int selection(const Pop_Fitness &) {
+int selection(const Pop_Fitness & pop_fitness) {
     int red = random(0, POP_SIZE-1);
     int blue = random(0, POP_SIZE-1);
 
-    if(Pop_Fitness[red] < Pop_Fitness[blue]) return red;
+    if(pop_fitness[red] < pop_fitness[blue]) return red;
     else return blue;
 }
 

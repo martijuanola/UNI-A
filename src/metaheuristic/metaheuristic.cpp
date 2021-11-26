@@ -52,7 +52,7 @@ vector<unordered_set<int>> nodes;//altGreedy posicio del vector es valor del nod
 int maxPos; //altGreedy indica quina es la posicio més alta del vector on hi ha vertexs
 vector<int> pos; //altGreedy indica quina es la posicio al vector de nodes de cada vertex (no ordenat)
 vector<bool> calculat; //altGreedy per indicar quins vertexs ja s'han calculat
-int profunditat = 1;
+int profunditat = 2;
 
 
 // string for keeping the name of the input file
@@ -197,6 +197,7 @@ void greedyRandom() { //Igual que altGreedy pero amb aleatorietat
     D = vector<bool>(N, false); //Comença amb cap node a la solucio
     s = vector<bool>(N, false); //Tots començen a false (0)
     pos = vector<int>(N, 0);
+    NND = vector<int>(N, 0);
 
     maxPos = 0;
     for (int i = 0; i < N; ++i) {
@@ -207,11 +208,9 @@ void greedyRandom() { //Igual que altGreedy pero amb aleatorietat
         pos[i] = p;
     }
 
-    cout << "CUMMER " << nodes[maxPos].size() << endl;
 
     while (not dominador()) {
         auto it = nodes[maxPos].begin();
-        cout << "CUMM " << maxPos <<endl;
         int rando = rand()%nodes[maxPos].size();
 
         while (rando > 0) {
@@ -267,11 +266,13 @@ int random(int min, int max) {
 
 void generate_pop_ini(Population& pop, Pop_Fitness& pop_fitness, Gene& best, int& best_fitness) {
     for (int i = 0; i < POP_SIZE; ++i) {
-        //greedyRandom();
+        greedyRandom();
+        cout << "generated solutions: " << i << endl;
+        /*
         D = vector<bool>(N, false);
         for (int j = 0; j < N; ++j) {
           D[j] = random(0,1);
-        }
+        }*/
         pop[i] = D;
 
         int fitness_current = fitness(D);
@@ -436,6 +437,17 @@ int main( int argc, char **argv ) {
 
             int MDPI_size = 0;
             for (int i = 0; i < N; ++i) MDPI_size += best[i];
+
+            NND = vector<int>(N, 0);
+            for (int i = 0; i < N; ++i) {
+                auto it = neighbors[i].begin();
+                while (it != neighbors[i].end()) {
+                    if (D[*it]) ++NND[i];
+                    ++it;
+                }
+            }
+            if (dominador()) cout << "Es dominador" << endl;
+            else cout << "OH NOOOO" << endl;
 
             cout << "value " << MDPI_size;
             cout << "\ttime " << ct << endl;

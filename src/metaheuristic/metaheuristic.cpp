@@ -32,7 +32,7 @@
 #include <cstring>
 #include <sstream>
 #include <vector>
-#include <set>
+#include <unordered_set>
 #include <limits>
 #include <iomanip>
 
@@ -41,9 +41,19 @@ time_t t;
 Random* rnd;
 
 // Data structures for the problem data
-int n_of_nodes;
-int n_of_arcs;
-vector< set<int> > neighbors;
+int N;
+int M;
+vector< unordered_set<int> > neighbors;
+//global variables for greedy
+vector<int> NND; //Nombre de nodes
+vector<bool> D; //Vector de nodes dominants
+vector<bool> s; //altGreedy true si es un vertex amb influencia positiva
+vector<unordered_set<int>> nodes;//altGreedy posicio del vector es valor del node = suma dels s dels veins, dins del set es els nodes que compleixen
+int maxPos; //altGreedy indica quina es la posicio més alta del vector on hi ha vertexs
+vector<int> pos; //altGreedy indica quina es la posicio al vector de nodes de cada vertex (no ordenat)
+vector<bool> calculat; //altGreedy per indicar quins vertexs ja s'han calculat
+int profunditat = 1;
+
 
 // string for keeping the name of the input file
 string inputFile;
@@ -59,7 +69,17 @@ int n_apps = 1;
 int dummy_integer_parameter = 0;
 int dummy_double_parameter = 0.0;
 
+//GLOBAL VARIABLES AND TYPES FOR THE METAHEURISTIC
+typedef vector<bool> Gene;
+typedef vector<Gene> Population;
+typedef vector<int>  Pop_Fitness;
 
+int POP_SIZE = 100;
+double CROSS_PROB = 0.8;
+double MUTATE_PROB = 0.2;
+int MAX_GEN = 100;
+
+//funcions plantilla
 inline int stoi(string &s) {
 
   return atoi(s.c_str());
@@ -95,6 +115,191 @@ void read_parameters(int argc, char **argv) {
     }
 }
 
+//GREEDY FUNCTIONS FOR GENERATING INITIAL SOLUTIONS. (Jaume made them)
+int minNND(int n) {
+    return ceil(float(n)/2);
+}
+
+bool dominador() {
+    for(int i = 0; i < N; i++) {
+        if(NND[i] < float(neighbors[i].size())/float(2)) return false;
+    }
+    return true;
+}
+
+void g(int v) {
+    int res = 0; //passa de bool a int
+
+    auto itr = neighbors[v].begin();
+    while (itr != neighbors[v].end()) {
+        res += 1 - s[*itr];
+        ++itr;
+    }
+    if (pos[v] != -1 and res != pos[v]) {
+        if (res > maxPos) maxPos = res;
+        //El canviem de llista
+        nodes[pos[v]].erase(v);
+        nodes[res].insert(v);
+        pos[v] = res;
+    }
+}
+
+void recalculG(int v, int prof) {
+    if (prof == 0) return;
+    unordered_set<int>::iterator itr = neighbors[v].begin();
+    while (itr != neighbors[v].end()) {
+        if (not calculat[*itr]) {
+            g(*itr); //recalcular g pels veins
+            calculat[*itr] = true;
+            recalculG(*itr, prof-1);
+        }
+        ++itr;
+    }
+}
+
+void actualitzaDades(int v) { //v abans no formava part de D i ara si
+
+    s[v] = (NND[v] >= minNND(neighbors[v].size()));
+
+    unordered_set<int>::iterator itr = neighbors[v].begin();
+    while (itr != neighbors[v].end()) {
+        ++NND[*itr];
+        s[*itr] = (NND[*itr] >= minNND(neighbors[*itr].size())); //Si arriba a ser true mai tornara a ser false
+        ++itr;
+    }
+
+    calculat = vector<bool> (N, false); //Comprova quins vertexs ja han siguit calculats o no s'han de calculat g()
+    calculat[v] = true;
+    recalculG(v, profunditat);
+
+    if (nodes[maxPos].empty()) {
+        bool found = false;
+        int i = maxPos;
+        while (not found) {
+            if (not nodes[i].empty()) {
+                maxPos = i;
+                found = true;
+            }
+            --i;
+        }
+    }
+}
+
+void greedyRandom() { //Igual que altGreedy pero amb aleatorietat
+    srand(time(NULL));
+    int maxSize = 0;
+    for (int i = 0; i < N; ++i) {
+        if (neighbors[i].size() > maxSize) maxSize = neighbors[i].size();
+    }
+    maxSize += 2; //+1 per que el node també conta 1 i +1 pel 0
+    nodes = vector<unordered_set<int>>(maxSize);
+
+    D = vector<bool>(N, false); //Comença amb cap node a la solucio
+    s = vector<bool>(N, false); //Tots començen a false (0)
+    pos = vector<int>(N, 0);
+
+    maxPos = 0;
+    for (int i = 0; i < N; ++i) {
+        int p = neighbors[i].size();
+        if (p > maxPos) maxPos = p;
+        nodes[p].insert(i);
+
+        pos[i] = p;
+    }
+    
+    while (not dominador()) {
+        auto it = nodes[maxPos].begin(); 
+        int rando = rand()%nodes[maxPos].size();
+
+        while (rando > 0) {
+            ++it;
+            --rando;
+        }
+
+        int v = *it;
+        nodes[maxPos].erase(it);
+
+        pos[v] = -1;
+        D[v] = true; //l'afegim al set dominant
+        actualitzaDades(v);
+    }
+}
+
+//METAHEURISTIC FUNCTIONS
+int fitness(const Gene & gen) {
+    int fitness = 0;
+
+    for (int vertex = 0; vertex < N; ++vertex) {
+        unordered_set<int> adjacents = neighbors[vertex];
+        
+        int grau_half = adjacents.size();
+        if(grau_half%2 == 1) ++grau_half;
+        grau_half = grau_half/2;
+
+        int adj_marked = 0;
+        unordered_set<int>::iterator it = adjacents.begin();
+        while (it != adjacents.end()) {
+            if(gen[(*it)] == 1) ++adj_marked;
+            ++it;
+        }
+
+        int cost_vertex = adj_marked - grau_half;
+        //doesnt reach 50% and we must penalize it
+        if (cost_vertex < 0) fitness += cost_vertex*cost_vertex;
+        else fitness += cost_vertex;
+    }
+
+    return fitness;
+}
+
+void generate_pop_ini(Population & pop,Pop_Fitness & pop_fitness,Gene & best,int & best_fitness) {
+    
+    for (int i = 0; i < POP_SIZE; ++i) {
+        greedyRandom();
+        pop[i] = D;
+
+        int fitness_current = fitness(D);
+        pop_fitness[i] = fitness_current;
+
+        if (fitness_current < best_fitness) {best = D; best_fitness = fitness_current;}
+    }
+}
+
+int random(int min, int max)
+{
+   static bool first = true;
+   if (first) 
+   {  
+      srand( time(NULL) );
+      first = false;
+   }
+   return min + rand() % (( max + 1 ) - min);
+}
+
+Gene cross(const Gene & x, const Gene & y) {
+    Gene aux(N);
+    int threshold = random(0, N-1);
+
+    for (int i = 0; i < N; ++i) {
+        if (i < threshold) aux[i] = x[i];
+        else aux[i] = y[i];
+    }
+
+    return aux;
+}
+
+void mutate(Gene & child) {
+    int mutation = random(0, N-1);
+    child[mutation] = not child[mutation];
+}
+
+int selection(const Pop_Fitness & pop_fitness) {
+    int red = random(0, POP_SIZE-1);
+    int blue = random(0, POP_SIZE-1);
+
+    if(pop_fitness[red] < pop_fitness[blue]) return red;
+    else return blue;
+}
 
 /**********
 Main function
@@ -124,26 +329,15 @@ int main( int argc, char **argv ) {
         cout << "Error: file could not be opened" << endl;
     }
 
-    indata >> n_of_nodes;
-    indata >> n_of_arcs;
-    neighbors = vector< set<int> >(n_of_nodes);
+    indata >> N;
+    indata >> M;
+    neighbors = vector< unordered_set<int> >(N);
     int u, v;
     while (indata >> u >> v) {
         neighbors[u - 1].insert(v - 1);
         neighbors[v - 1].insert(u - 1);
     }
     indata.close();
-
-    //GLOBAL VARIABLES AND TYPES FOR THE METAHEURISTIC
-    typedef vector<bool> Gene;
-    typedef vector<Gene> Population;
-    typedef vector<int>  Pop_Fitness;
-
-    int POP_SIZE = 100;
-    float CROSS_PROB = 0.8;
-    float MUTATE_PROB = 0.2;
-    float GREEDY_RAND = 0.5;
-    int MAX_GEN = 100;
 
     // main loop over all applications of the metaheuristic
     for (int na = 0; na < n_apps; ++na) {
@@ -177,15 +371,15 @@ int main( int argc, char **argv ) {
         //
         // Stop the execution of the metaheuristic
         // once the time limit "time_limit" is reached.
-        int FITNESS_TOTAL = 0;
-        int FITNESS_ANT = 1;
+        int FITNESS_TOTAL = std::numeric_limits<int>::max();
+        int FITNESS_ANT = std::numeric_limits<int>::max();
 
-        Population pop(POP_SIZE, Gene(n_of_nodes));
+        Population pop(POP_SIZE, Gene(N));
         Pop_Fitness pop_fitness(POP_SIZE, -1);
-        Gene best(n_of_nodes);
+        Gene best(N);
         int best_fitness = 0;
 
-        generate_pop_ini(pop&, pop_fitness&, best&, best_fitness&);
+        generate_pop_ini(pop, pop_fitness, best, best_fitness);
 
         for (int generation = 0;
           //we iterate up to the maximum generation or...
@@ -196,30 +390,41 @@ int main( int argc, char **argv ) {
           timer.elapsed_time(Timer::VIRTUAL) < time_limit;
             ++generation) {
 
+              FITNESS_ANT = FITNESS_TOTAL;
               FITNESS_TOTAL = 0;
 
-              Population pop_new(POP_SIZE, Gene(n_of_nodes));
+              Population pop_new(POP_SIZE, Gene(N));
               Pop_Fitness pop_fitness_new(POP_SIZE, -1);
               for (int child_idx = 0; child_idx < POP_SIZE and timer.elapsed_time(Timer::VIRTUAL);
               ++child_idx) {
 
-                Gene x = selection(pop&);
-                Gene y = selection(pop&);
+                Gene x = pop[selection(pop_fitness)];
+                Gene y = pop[selection(pop_fitness)];
 
-                Gene child = cross(x,y);
-                //if MUTATE_PROB mutate child;
+                Gene child = x;
+                if (rnd->next() <= CROSS_PROB) child = cross(x,y);
+                if (rnd->next() <= MUTATE_PROB) mutate(child);
 
                 pop_new[child_idx] = child;
 
-                int child_fitness = fitness(const child&);
+                int child_fitness = fitness(child);
                 pop_fitness_new[child_idx] = child_fitness;
                 FITNESS_TOTAL += child_fitness;
+
+                if(best_fitness > child_fitness) {
+                  best_fitness = child_fitness;
+                  best = child;
                 }
+
+                }
+
+                pop = pop_new;
+                pop_fitness = pop_fitness_new;
             }
             double ct = timer.elapsed_time(Timer::VIRTUAL);
 
             int MDPI_size = 0;
-            for (int i = 0; i < n_of_nodes; ++i) MDPI_size += best[i];
+            for (int i = 0; i < N; ++i) MDPI_size += best[i];
 
             cout << "value " << MDPI_size;
             cout << "\ttime " << ct << endl;

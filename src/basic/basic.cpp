@@ -84,20 +84,12 @@ int minNND(int n) {
 //Fa servir neighborsUS i nnd
 
 int dominador1(vector<int> nnds) {
-
-    bool b = true;
-    int falta = -1;
     int i = 0;
-    while(i < N and b) {
-        if(nnds[i] < float(neighborsS[i].size())/2) {
-            b = false;
-            falta = i;
-        }
+    while(i < N) {
+        if(nnds[i] < float(neighborsS[i].size())/2) return i+1;
         i++;
     }
-
-    if (falta != -1) return falta;
-    return falta;
+    return -1;
 }
 
 int dominador2(vector<int> NND) {

@@ -206,9 +206,12 @@ void greedyRandom() { //Igual que altGreedy pero amb aleatorietat
 
         pos[i] = p;
     }
-    
+
+    cout << "CUMMER " << nodes[maxPos].size() << endl;
+
     while (not dominador()) {
-        auto it = nodes[maxPos].begin(); 
+        auto it = nodes[maxPos].begin();
+        cout << "CUMM " << maxPos <<endl;
         int rando = rand()%nodes[maxPos].size();
 
         while (rando > 0) {
@@ -231,7 +234,7 @@ int fitness(const Gene & gen) {
 
     for (int vertex = 0; vertex < N; ++vertex) {
         unordered_set<int> adjacents = neighbors[vertex];
-        
+
         int grau_half = adjacents.size();
         if(grau_half%2 == 1) ++grau_half;
         grau_half = grau_half/2;
@@ -252,10 +255,23 @@ int fitness(const Gene & gen) {
     return fitness;
 }
 
-void generate_pop_ini(Population & pop,Pop_Fitness & pop_fitness,Gene & best,int & best_fitness) {
-    
+int random(int min, int max) {
+   static bool first = true;
+   if (first)
+   {
+      srand( time(NULL) );
+      first = false;
+   }
+   return min + rand() % (( max + 1 ) - min);
+}
+
+void generate_pop_ini(Population& pop, Pop_Fitness& pop_fitness, Gene& best, int& best_fitness) {
     for (int i = 0; i < POP_SIZE; ++i) {
-        greedyRandom();
+        //greedyRandom();
+        D = vector<bool>(N, false);
+        for (int j = 0; j < N; ++j) {
+          D[j] = random(0,1);
+        }
         pop[i] = D;
 
         int fitness_current = fitness(D);
@@ -263,17 +279,7 @@ void generate_pop_ini(Population & pop,Pop_Fitness & pop_fitness,Gene & best,int
 
         if (fitness_current < best_fitness) {best = D; best_fitness = fitness_current;}
     }
-}
-
-int random(int min, int max)
-{
-   static bool first = true;
-   if (first) 
-   {  
-      srand( time(NULL) );
-      first = false;
-   }
-   return min + rand() % (( max + 1 ) - min);
+    cout << "Generated initial solutions"  << endl;
 }
 
 Gene cross(const Gene & x, const Gene & y) {
@@ -340,6 +346,8 @@ int main( int argc, char **argv ) {
     indata.close();
 
     // main loop over all applications of the metaheuristic
+    cout << "METAHEURISTIC" << endl;
+
     for (int na = 0; na < n_apps; ++na) {
 
         // the computation time starts now
@@ -371,13 +379,13 @@ int main( int argc, char **argv ) {
         //
         // Stop the execution of the metaheuristic
         // once the time limit "time_limit" is reached.
-        int FITNESS_TOTAL = std::numeric_limits<int>::max();
+        int FITNESS_TOTAL = std::numeric_limits<int>::max()-1;
         int FITNESS_ANT = std::numeric_limits<int>::max();
 
         Population pop(POP_SIZE, Gene(N));
         Pop_Fitness pop_fitness(POP_SIZE, -1);
         Gene best(N);
-        int best_fitness = 0;
+        int best_fitness = std::numeric_limits<int>::max();
 
         generate_pop_ini(pop, pop_fitness, best, best_fitness);
 
@@ -388,7 +396,7 @@ int main( int argc, char **argv ) {
           FITNESS_TOTAL < FITNESS_ANT and
           //until we reach the time limit.
           timer.elapsed_time(Timer::VIRTUAL) < time_limit;
-            ++generation) {
+          ++generation) {
 
               FITNESS_ANT = FITNESS_TOTAL;
               FITNESS_TOTAL = 0;
@@ -414,9 +422,12 @@ int main( int argc, char **argv ) {
                 if(best_fitness > child_fitness) {
                   best_fitness = child_fitness;
                   best = child;
-                }
+                  }
 
                 }
+
+                cout << "Generation: " << generation << ". Fitness Best: " << best_fitness;
+                cout << ". Fitness Total: " << FITNESS_TOTAL << ". Time: " << (int) timer.elapsed_time(Timer::VIRTUAL) <<endl;
 
                 pop = pop_new;
                 pop_fitness = pop_fitness_new;
@@ -433,6 +444,7 @@ int main( int argc, char **argv ) {
             times[na] = ct;
 
         cout << "end application " << na + 1 << endl;
+        cout << endl;
     }
 
     // calculating the average of the results and computation times,

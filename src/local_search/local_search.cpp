@@ -34,14 +34,20 @@ vector<unordered_set<int>> neighbors;
 // string for keeping the name of the input file
 string inputFile;
 
-// number of applications of local search
+//Global parameters
+//execution
 int n_apps = 1;
 
-// dummy parameters as examples for creating command line parameters -> 
-// see function read_parameters(...)
+//Heuristic, ops and initial solution
 int H = 0;
 int O = 0;
 int SI = 0;
+
+//SA parameters
+int T = 15000;
+int iT = 10;
+int k = 7;
+double l = 0.05;
 
 inline int stoi(string &s) {
 
@@ -60,9 +66,15 @@ void read_parameters(int argc, char **argv) {
     while (iarg < argc) {
         if (strcmp(argv[iarg],"-i")==0) inputFile = argv[++iarg];               //input file
         else if (strcmp(argv[iarg],"-n")==0) n_apps = atoi(argv[++iarg]);  //iterations of algorithm
+
         else if (strcmp(argv[iarg],"-h")==0) H = atoi(argv[++iarg]);            //heuristic function
         else if (strcmp(argv[iarg],"-o")==0) O = atof(argv[++iarg]);            //operators
         else if (strcmp(argv[iarg],"-si")==0) SI = atof(argv[++iarg]);          //initial solution/state
+
+        else if (strcmp(argv[iarg],"-T")==0) T = atof(argv[++iarg]);          //initial solution/state
+        else if (strcmp(argv[iarg],"-iT")==0) iT = atof(argv[++iarg]);          //initial solution/state
+        else if (strcmp(argv[iarg],"-k")==0) k = atof(argv[++iarg]);          //initial solution/state
+        else if (strcmp(argv[iarg],"-l")==0) l = atof(argv[++iarg]);          //initial solution/state
         iarg++;
     }
 }
@@ -115,7 +127,6 @@ int minimal3(const vector<bool>& DV, const vector<int>& NND) {
 //PRE: SI indica quina solució inicial utilitzar
 //POST: tots els nodes pertanyen a D i per tant tots els veins d'un node també
 vector<bool> solucio_inicial(vector<int>& NND) {
-    
     vector<bool> s(N,false);
     NND = vector<int> (N,0);
     
@@ -123,8 +134,7 @@ vector<bool> solucio_inicial(vector<int>& NND) {
     if(SI == 1) {
         while(dominador(NND) != -1) {
             float n = rnd->next();
-            int pos = int(float(N)*n);
-            
+            int pos = int(N*n);
             while(s[pos]) pos = (pos+1)%N;
 
             s[pos] = true;
@@ -239,26 +249,14 @@ void opSWAP(vector<bool>& v, vector<int>& NND, int posND, int posD) {
 }
 
 vector<bool> simulatedAnnealing() {
-    //variables pel SA
-    int T = 15000;
-    int iT = 10;
-    int k = 3;
-    double l = 0.05;
-
-    /*
-     *3873    3922.33 50.66   7.03    0.24
-     *int T = 15000;
-    int iT = 10;
-    int k = 3;
-    double l = 0.05;
-    */
 
     vector<string> ops(0);
     vector<int> NND;
     vector<bool> s = solucio_inicial(NND);
     double h = 0;
 
-    while(T > 0) {
+    int iter = 0;
+    while(iter < T) {
         //cout << "Temperatura " << T << endl;
 
         for(int si = 0; si < iT; si++) {
@@ -302,21 +300,21 @@ vector<bool> simulatedAnnealing() {
                 s = auxS;
                 h = auxH;
                 ops.push_back(str);
-                cout << T << ":\t" << "ND=" << ND(s) << "\t" << str << endl ;//<< endl ;
+                cout << iter << ":\t" << str << endl ;
             }
             else {//igual o pitjor
                 float p = rnd->next();
-                float P = exp(difH/(k*exp(-l*T)));
+                float P = exp(difH/(k*exp(-l*iter)));
                 if(p <= P) { // es fa el canvi igualment
                     NND = auxNND;
                     s = auxS;
                     h = auxH;
                     ops.push_back(str);
-                    cout << T << ":\t" << "ND=" << ND(s) << "\t" << str << endl ;//<< endl ;
+                    cout << iter << ":\t" << str << endl ;
                 }
             }
         }
-        T--;
+        iter++;
     }
 
 

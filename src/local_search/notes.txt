@@ -1,69 +1,15 @@
-LOCAL SEARCH
-
-Propostes:
-
-1.- Simulated Annealing
-2.- Local Search del paper
-3.- Variants del Hill Climbing:
-    3.1.- Per cada remove fas swaps
-    3.2.- Heuístic que sigui
-
-
-
 Coses a fer:
 
-    - fer una SOLUCIO INICIAL per millorar el temps de Hill climbing (value 3208.00   time 1351.27)
-        FET-fer una aleatoria
-        -fer-ne una de simple com paper
-        -fer servir greedy den Jaume
-    - plantejar una variant del hill on es fa un remove i després optimitzes amb swaps fins que no puguis més
-
-Heurístiques:
-
-    H1: sumatori diferències entre minim
-
-    H2:
+    -Solució Inicial:
+        -Afegir la den Jaume
 
 
-Operadors:
-
-    - REMOVE from D
-    - SWAP element of D and of COMPLEMENT D (PROBLEMES AMB ELS HEURÍSTICS A HILL CLIMBING)
-    - ADD to D (no crec que tingui sentit)
-
- -- Hill Climbing -- 
-
-    -Problemes:
-        - El swap no funciona tal cual
-        - L'heurístic ha de poder comparar l'estat acutal amb el següent(SA)
+    -Heurístics
+        -fer la versió bona del de l'Adrià
+        -Noves idees??
 
 
-
-
- -- Simulated Annealing -- 
-
-    Passos:
-
-    1.-while de temperatura
-        2.-for d'iteracions max
-            3.-generar a l'atzar fill
-            4.-mirar diferència d'enetrgia(heurístic)
-            5.- si és positiu s'aplica
-            6.- sino a mb probabilitat d'energia/temperatura s'afegeix igualment
-        3.-es disminueix la temperatura
-
-    Paràmetres:
-        - Iteracions totals(Temperatura T)
-        - iteracions per cada T
-        - k i lambda per la funció de temperatura que amb T defineixes una funció per quan van a pitjor
-
-
-
-
-Hill Climbing potxo:
-1.- Generar solució inicial
-2.- While {
-    3.- Eliminar fins no solució
-    4.- swaps fins solució / timout d'iteracions
-
-}
+    -Testejar
+        -Fer shell per probar millors paràmetres
+        -Provar amb diferents operadors
+        -Treure resultats per tots els testos en format guai

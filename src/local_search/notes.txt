@@ -5,7 +5,7 @@ Coses a fer:
 
 
     -Heurístics
-        -fer la versió bona del de l'Adrià
+        -fer la versió bona del de l'Adrià(acabar)
         -Noves idees??
 
 
@@ -13,3 +13,6 @@ Coses a fer:
         -Fer shell per probar millors paràmetres
         -Provar amb diferents operadors
         -Treure resultats per tots els testos en format guai
+
+    -Petites correccions:
+        -guardar ND com a variable(Time optimization)

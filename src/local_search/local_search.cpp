@@ -37,17 +37,18 @@ string inputFile;
 //Global parameters
 //execution
 int n_apps = 1;
+int print = 1;
 
 //Heuristic, ops and initial solution
 int H = 0;
-int O = 0;
+int O = 0; // 0-REMOVE | 1-REMOVE+ADD | 2-REMOVE+SWAP | 3-REMOVE+ADD+SWAP
 int SI = 0;
 
 //SA parameters
-int T = 15000;
-int iT = 10;
-int k = 7;
-double l = 0.05;
+int T = 20000;
+int iT = 15;
+int k = 6;
+float l = 0.04;
 
 inline int stoi(string &s) {
 
@@ -65,16 +66,17 @@ void read_parameters(int argc, char **argv) {
 
     while (iarg < argc) {
         if (strcmp(argv[iarg],"-i")==0) inputFile = argv[++iarg];               //input file
-        else if (strcmp(argv[iarg],"-n")==0) n_apps = atoi(argv[++iarg]);  //iterations of algorithm
+        else if (strcmp(argv[iarg],"-n")==0) n_apps = atoi(argv[++iarg]);       //iterations of algorithm
+        else if (strcmp(argv[iarg],"-p")==0) print = 0;                             //elimina prints
 
         else if (strcmp(argv[iarg],"-h")==0) H = atoi(argv[++iarg]);            //heuristic function
-        else if (strcmp(argv[iarg],"-o")==0) O = atof(argv[++iarg]);            //operators
-        else if (strcmp(argv[iarg],"-si")==0) SI = atof(argv[++iarg]);          //initial solution/state
+        else if (strcmp(argv[iarg],"-o")==0) O = atoi(argv[++iarg]);            //operators
+        else if (strcmp(argv[iarg],"-si")==0) SI = atoi(argv[++iarg]);          //initial solution/state
 
-        else if (strcmp(argv[iarg],"-T")==0) T = atof(argv[++iarg]);          //initial solution/state
-        else if (strcmp(argv[iarg],"-iT")==0) iT = atof(argv[++iarg]);          //initial solution/state
-        else if (strcmp(argv[iarg],"-k")==0) k = atof(argv[++iarg]);          //initial solution/state
-        else if (strcmp(argv[iarg],"-l")==0) l = atof(argv[++iarg]);          //initial solution/state
+        else if (strcmp(argv[iarg],"-T")==0) T = atoi(argv[++iarg]);            //Temperatura
+        else if (strcmp(argv[iarg],"-iT")==0) iT = atoi(argv[++iarg]);          //Iteracions per temperatura
+        else if (strcmp(argv[iarg],"-k")==0) k = atoi(argv[++iarg]);            //K
+        else if (strcmp(argv[iarg],"-l")==0) l = atof(argv[++iarg]);            //lambda
         iarg++;
     }
 }
@@ -160,27 +162,16 @@ vector<bool> solucio_inicial(vector<int>& NND) {
 //PRE: H indica l'heurístic que es farà servir
 //POST: retorna el valor de l'heurístic H
 double heruistic(const vector<bool>& v, const vector<int>& NND) {
-    //no solució es descarta, torna nombre de nodes fora de D
-    //PETA EL SWAP
+    //maximitza nodes a ND
     if(H == 1) { 
         if(dominador(NND) != -1) return 0.0;
         else {
             return double(N - ND(v));
         }
     }
-    //no solució es descarta, torna diferència entre el minim
-    //PETA EL SWAP
-    else if(H == 2) {
-        if(dominador(NND) != -1) return 0.0;
-        else { //diferència del minim i l'actual NND
-            double sum = 0;
-            for(int i = 0; i < N; i++) sum += neighbors[i].size() - (NND[i] - minNND(neighbors[i].size()));
-            return sum;
-        }
-    }
 
-    //maximitzar nombre d'arestes per vertex de D
-    else if(H == 3) {
+    //maximitzar sumatori nombre arestes dels vertex de D
+    else if(H == 2) {
         if(dominador(NND) != -1) return 0.0;
         else { //diferència del minim i l'actual NND
             double sum = 0, count = 0;
@@ -193,8 +184,39 @@ double heruistic(const vector<bool>& v, const vector<int>& NND) {
             return sum/count;
         }
     }
+    
+    //minimitza diferència entre minNND i NND
+    else if(H == 3) {
+        if(dominador(NND) != -1) return 0.0;
+        else { //diferència del minim i l'actual NND
+            double sum = 0;
+            for(int i = 0; i < N; i++) sum += neighbors[i].size() - (NND[i] - minNND(neighbors[i].size()));
+            return sum;
+        }
+    }
 
-    //
+    //minimitza diferència entre minNND i NND per nodes de ND
+    else if(H == 4) {
+        if(dominador(NND) != -1) return 0.0;
+        else { //diferència del minim i l'actual NND
+            double sum = 0;
+            for(int i = 0; i < N; i++) {
+                if(not v[i]) sum += neighbors[i].size() - (NND[i] - minNND(neighbors[i].size()));
+            }
+            return sum;
+        }
+    }
+
+    //minimitza diferència entre minNND i NND però no descarta
+    else if(H == 5) {
+        double sum = 0;
+        for(int i = 0; i < N; i++) {
+            double aux = NND[i] - minNND(neighbors[i].size());
+            if(aux < 0) aux *= aux;
+            sum += - aux;
+        }
+        return sum + 2*M;
+    }
 
     //que pugui sortir de l'espai i tornar prioritzant adds(ND)
     else return 0.0;
@@ -206,10 +228,16 @@ double heruistic(const vector<bool>& v, const vector<int>& NND) {
 //PRE: l'element pos no ha d'estar al set D
 //POST: s'ha afegit l'element pos a D i s'ha actualitzat NND
 void opADD(vector<bool>& v, vector<int>& NND, int pos) {
+    if(ND(v) == N) {
+        cout << "ADD + D ple!!!" << endl;
+        return;
+    }
+
     if(v[pos]) {
         cout << "ERROR(opADD): l'element " << pos+1 << " ja està a D, no es pot tornar a afegir." << endl;
         return;
     }
+
     v[pos] = true;
     for(auto itr = neighbors[pos].begin(); itr != neighbors[pos].end(); itr++) {
         NND[*itr]++;
@@ -219,6 +247,10 @@ void opADD(vector<bool>& v, vector<int>& NND, int pos) {
 //PRE: l'element pos ha d'estar a D
 //POST: s'ha eliminat l'element pos de D i s'ha actualitzat NND
 void opREMOVE(vector<bool>& v, vector<int>& NND, int pos) {
+    if(ND(v) == 0) {
+        cout << "REMOVE + D buit!!!" << endl;
+        return;
+    }
     if(not v[pos]) {
         cout << "ERROR(opREMOVE): l'element " << pos+1 << " no està a D, no es pot tornar a eliminar." << endl;
         return;
@@ -232,6 +264,15 @@ void opREMOVE(vector<bool>& v, vector<int>& NND, int pos) {
 //PRE: l'element posND no ha d'estar a D i l'element posD sí que ho ha d'estar
 //POST: posND ara està a D i posD no. NND s'ha acutalitzat.
 void opSWAP(vector<bool>& v, vector<int>& NND, int posND, int posD) {
+    if(ND(v) == N) {
+        cout << "SWAP + D ple!!!" << endl;
+        return;
+    }
+    else if(ND(v) == 0) {
+        cout << "SWAP + D buit!!!" << endl;
+        return;
+    }
+
     if(v[posND] or not v[posD]) {
         if(v[posND]) cout << "ERROR(opSWAP): l'element " << posND+1 << " ja està a D, no es pot tornar a afegir." << endl;
         if(not v[posD]) cout << "ERROR(opSWAP): l'element " << posD+1 << " no està a D, no es pot tornar a eliminar." << endl;
@@ -249,6 +290,8 @@ void opSWAP(vector<bool>& v, vector<int>& NND, int posND, int posD) {
 }
 
 vector<bool> simulatedAnnealing() {
+
+    int min = N+1;
 
     vector<string> ops(0);
     vector<int> NND;
@@ -276,16 +319,18 @@ vector<bool> simulatedAnnealing() {
             double auxH = 0;
 
             float nops = 3.0;
+            if(O == 1 or O == 2) nops = 2.0;
+            else if(O == 0) nops = 1.0;
 
-            if(r1 < 1.0/nops) {
-                opADD(auxS,auxNND,r3i);
-                auxH = heruistic(auxS,auxNND);
-                str = "H" + to_string(auxH) + "\tADD\t ND=" + to_string(ND(auxS)) + "\tElement " + to_string(r3i);
-            }
-            else if(r1 < 2.0/nops) {
+            if(r1 <= 1.0/nops) {
                 opREMOVE(auxS,auxNND,r2i);
                 auxH = heruistic(auxS,auxNND);
                 str = "H" + to_string(auxH) + "\tREMOVE\t ND=" + to_string(ND(auxS)) + "\tElement " + to_string(r2i);
+            }
+            else if(r1 <= 2.0/nops and O != 2) {
+                opADD(auxS,auxNND,r3i);
+                auxH = heruistic(auxS,auxNND);
+                str = "H" + to_string(auxH) + "\tADD\t ND=" + to_string(ND(auxS)) + "\tElement " + to_string(r3i);
             }
             else {
                 opSWAP(auxS,auxNND,r3i,r2i);
@@ -300,7 +345,7 @@ vector<bool> simulatedAnnealing() {
                 s = auxS;
                 h = auxH;
                 ops.push_back(str);
-                cout << iter << ":\t" << str << endl ;
+                if(print == 1) cout << iter << ":\t" << str << endl ;
             }
             else {//igual o pitjor
                 float p = rnd->next();
@@ -310,9 +355,10 @@ vector<bool> simulatedAnnealing() {
                     s = auxS;
                     h = auxH;
                     ops.push_back(str);
-                    cout << iter << ":\t" << str << endl ;
+                    if(print == 1) cout << iter << ":\t" << str << endl ;
                 }
             }
+            if(ND(s) < min) min = ND(s);
         }
         iter++;
     }
@@ -322,18 +368,20 @@ vector<bool> simulatedAnnealing() {
     if(dominador(NND)) cout << "THE D IS A POSITIVE DOMINATOR SET" << endl;
     else cout << "THE D IS NOT VALID" << endl;
 
+    if(minimal3(s,NND)) cout << "MINIMAL!!" << endl;
+    else cout << "NOT MINIMAL!!" << endl;
+
     //print results
-    if(false) {
-        if(ops.size() != 0) {
+    if(print == 1) {
+        cout << "MIN=" << min << endl;
+        /*if(ops.size() != 0) {
             cout << "OPERATIONS PERFORMED:" << endl;
             for(int i = 0; i < ops.size(); i++) cout << ops[i] << endl;
         }
-        else cout << "NO OPERATIONS WERE PERFORDMED" << endl;
+        else cout << "NO OPERATIONS WERE PERFORDMED" << endl;*/
     }
     
     return s;
-
-
 }
 
 //PRE: graf inicialitzat

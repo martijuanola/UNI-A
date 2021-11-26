@@ -34,6 +34,7 @@
 #include <set>
 #include <limits>
 #include <iomanip>
+#include <algorithm>
 
 // global variables concerning the random number generator (in case needed)
 time_t t;
@@ -42,13 +43,20 @@ time_t t;
 int N;
 int M;
 vector< unordered_set<int> > neighbors; //Dades inicials
-vector<int> NND; //Nombre de nodes
+vector<int> NND; //Nombre de nodes veins dominants
 vector<bool> D; //Vector de nodes dominants
-vector<bool> s; //altGreedy true si es un vertex amb influencia positiva
-vector<unordered_set<int>> nodes;//altGreedy posicio del vector es valor del node = suma dels s dels veins, dins del set es els nodes que compleixen
-int maxPos; //altGreedy indica quina es la posicio més alta del vector on hi ha vertexs
-vector<int> pos; //altGreedy indica quina es la posicio al vector de nodes de cada vertex (no ordenat)
-vector<bool> calculat; //altGreedy per indicar quins vertexs ja s'han calculat
+
+//altGreedy
+vector<bool> s; // true si es un vertex amb influencia positiva (també utilitzat per Pan's)
+vector<unordered_set<int>> nodes;// posicio del vector es valor del node = suma dels s dels veins, dins del set es els nodes que compleixen
+int maxPos; // indica quina es la posicio més alta del vector on hi ha vertexs
+vector<int> pos; // indica quina es la posicio al vector de nodes de cada vertex (no ordenat)
+vector<bool> calculat; // per indicar quins vertexs ja s'han calculat
+
+//Pan's algorithm
+vector<int> NNPS; //Quants nodes veins dominants falten per satisfer el node
+vector<int> unsat; //Nombre de veins no satisfets
+vector< pair<int, int> > OD; //neighbors ordenar per tamany de veins el primer int representa la posicio incial a neighbors
 
 // string for keeping the name of the input file
 string inputFile;
@@ -324,6 +332,76 @@ void greedyRandom() { //Igual que altGreedy pero amb aleatorietat
     }
 }
 
+void panGreedy() {
+    for (int i = 0; i < N; ++i) { //Recorrem tots els vertexs en OD
+        int v = OD[i].first; // vertex que realment mirem
+        for (int j = 0; j < NNPS[v];) { //Per tots els que falten per satisfer
+            unordered_set<int>::iterator it1 = neighbors[v].begin();
+            int max = *it1, value = unsat[*it1];
+            if (D[*it1]) value = -1316134911;
+            ++it1;
+            while (it1 != neighbors[v].end()) { //Agafem el vei més insatisfet NNPS[v] vegades
+                if (not D[*it1] and unsat[*it1] > value) {
+                    max = *it1;
+                }
+                ++it1;
+            }
+            D[max] = true;
+            unordered_set<int>::iterator it2 = neighbors[max].begin();
+            while (it2 != neighbors[max].end()) {
+                ++NND[*it2];
+                if (NNPS[*it2] > 0) {
+                    --NNPS[*it2];
+                    if (NNPS[*it2] == 0) {
+                        unordered_set<int>::iterator it3 = neighbors[*it2].begin();
+                        while (it3 != neighbors[*it2].end()) {
+                            --unsat[*it3];
+                            ++it3;
+                        }
+                    }
+                }
+                ++it2;
+            }
+        }
+    /*
+        for (int j = 0; j < NNPS[i]; ++j) {
+            unordered_set<int>::iterator itr = neighbors[OD[i].first].begin();
+            int max, maxPos, p = pe(*itr);
+            max = unsat[p]; //No comprovo que existeixi el primer perque tots els nodes han de tenir com a minim un vei
+            maxPos = p;
+            ++itr;
+            while (itr != neighbors[OD[i].first].end()) {
+                p = pe(*itr);
+                if (not D[*itr] and unsat[p] > max) {
+                    max = unsat[p];
+                    maxPos = p;
+                }
+                ++itr;
+            }
+            D[OD[maxPos].first] = true;
+            cout << "tu seras dominant: " << OD[maxPos].first+1 << " maxPos: " << maxPos << endl;
+            unordered_set<int>::iterator it = neighbors[OD[maxPos].first].begin();
+            while (it != neighbors[OD[maxPos].first].end()) {
+                int p1 = pe(*it);
+                ++NND[*it];
+                if (NNPS[p1] > 0) {
+                    --NNPS[p1];
+                    if (NNPS[p1] == 0) {
+                        unordered_set<int>::iterator iter = neighbors[OD[*it].first].begin();
+                        while (iter != neighbors[OD[*it].first].end()) {
+                            int p2 = pe(*iter);
+                            --unsat[p2];
+                            ++iter;
+                        }
+                    }
+                }
+                ++it;
+            }
+        }
+        */
+    }
+}
+
  /*------- MAIN -------*/
 
 int main( int argc, char **argv ) {
@@ -424,7 +502,27 @@ int main( int argc, char **argv ) {
             printResult();
         }
     }
+    else if (algorisme == 4) {
+        NNPS = vector<int>(N);
+        unsat = vector<int>(N);
+        OD = vector<pair<int, int>>(N);
+        for (int i = 0; i < N; ++i) {
+            OD[i] = make_pair(i, neighbors[i].size());
+            NNPS[i] = minNND(neighbors[i].size());
+            unsat[i] = neighbors[i].size();
+        }
+        //Ordenem per nombre de veins
+        sort(OD.begin(), OD.end(), [](pair<int, int> &l, pair<int, int> &r) {
+            return l.second < r.second;
+        });
 
+        NND = vector<int>(N, 0);
+        D = vector<bool>(N, false);
+
+        panGreedy();
+        printResult();
+    }
+    else cout << "No hi cap algorisme assignat al nombre " << algorisme << endl;
 
     double ct = timer.elapsed_time(Timer::VIRTUAL);
     cout << "\ttime " << ct << endl;

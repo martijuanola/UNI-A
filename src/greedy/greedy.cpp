@@ -98,7 +98,7 @@ int minNND(int n) {
     return ceil(float(n)/2);
 }
 
- /*------- DOMINADORS -------*/
+/*------- DOMINADORS -------*/
 
 int dominador2(vector<int> NND) {
     for(int i = 0; i < neighbors.size(); i++) {
@@ -262,7 +262,9 @@ void actualitzaDades(int v) { //v abans no formava part de D i ara si
 
     calculat = vector<bool> (N, false); //Comprova quins vertexs ja han siguit calculats o no s'han de calculat g()
     calculat[v] = true;
+   
     recalculG(v, profunditat);
+    
 
     if (nodes[maxPos].empty()) {
         bool found = false;
@@ -277,7 +279,7 @@ void actualitzaDades(int v) { //v abans no formava part de D i ara si
     }
 }
 
- /*------- GREEDIES -------*/
+/*------- GREEDIES -------*/
 
 
 void greedyNaive() {

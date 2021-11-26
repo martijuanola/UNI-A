@@ -31,6 +31,9 @@ int N;
 int M;
 vector<unordered_set<int>> neighbors;
 
+int resultG = 0;
+int incrementLS = 0;
+
 // string for keeping the name of the input file
 string inputFile;
 
@@ -45,10 +48,13 @@ int O = 0; // 0-REMOVE | 1-REMOVE+ADD | 2-REMOVE+SWAP | 3-REMOVE+ADD+SWAP
 int SI = 0;
 
 //SA parameters
-int T = 20000;
-int iT = 15;
+int T = 15000;
+int iT = 20;
 int k = 6;
-float l = 0.04;
+float l = 0.1;
+
+//Greedy Jaume
+int profunditat = 1;
 
 inline int stoi(string &s) {
 
@@ -77,6 +83,9 @@ void read_parameters(int argc, char **argv) {
         else if (strcmp(argv[iarg],"-iT")==0) iT = atoi(argv[++iarg]);          //Iteracions per temperatura
         else if (strcmp(argv[iarg],"-k")==0) k = atoi(argv[++iarg]);            //K
         else if (strcmp(argv[iarg],"-l")==0) l = atof(argv[++iarg]);            //lambda
+
+        else if (strcmp(argv[iarg],"-d")==0) profunditat = atoi(argv[++iarg]);  //profunditat pel greedy
+
         iarg++;
     }
 }
@@ -100,11 +109,11 @@ int ND(const vector<bool>& v) {
     return count;
 }
 
-int dominador(const vector<int>& NND) {
+bool dominador(const vector<int>& NND) {
     for(int i = 0; i < neighbors.size(); i++) {
-        if(NND[i] < minNND(neighbors[i].size())) return i;
+        if(NND[i] < minNND(neighbors[i].size())) return false;
     }
-    return -1;
+    return true;
 }
 
 int minimal3(const vector<bool>& DV, const vector<int>& NND) { 
@@ -122,6 +131,96 @@ int minimal3(const vector<bool>& DV, const vector<int>& NND) {
     return -1;
 }
 
+/* ----------------- COSES GREEDY ----------------- */
+
+//altGreedy
+vector<bool> s; // true si es un vertex amb influencia positiva (també utilitzat per Pan's)
+vector<unordered_set<int>> nodes;// posicio del vector es valor del node = suma dels s dels veins, dins del set es els nodes que compleixen
+int maxPos; // indica quina es la posicio més alta del vector on hi ha vertexs
+vector<int> pos; // indica quina es la posicio al vector de nodes de cada vertex (no ordenat)
+vector<bool> calculat; // per indicar quins vertexs ja s'han calculat
+
+void g(int v) {
+    int res = 0; //passa de bool a int
+
+    auto itr = neighbors[v].begin();
+    while (itr != neighbors[v].end()) {
+        res += 1 - s[*itr];
+        ++itr;
+    }
+    if (pos[v] != -1 and res != pos[v]) {
+        if (res > maxPos) maxPos = res;
+        //El canviem de llista
+        nodes[pos[v]].erase(v);
+        nodes[res].insert(v);
+        pos[v] = res;
+    }
+}
+
+void recalculG(int v, int prof) {
+    if (prof == 0) return;
+    unordered_set<int>::iterator itr = neighbors[v].begin();
+    while (itr != neighbors[v].end()) {
+        if (not calculat[*itr]) {
+            g(*itr); //recalcular g pels veins
+            calculat[*itr] = true;
+            recalculG(*itr, prof-1);
+        }
+        ++itr;
+    }
+}
+
+void actualitzaDades(int v, vector<int>& NND) { //v abans no formava part de D i ara si
+   
+    s[v] = (NND[v] >= minNND(neighbors[v].size()));
+
+    unordered_set<int>::iterator itr = neighbors[v].begin();
+    while (itr != neighbors[v].end()) {
+        ++NND[*itr];
+        s[*itr] = (NND[*itr] >= minNND(neighbors[*itr].size())); //Si arriba a ser true mai tornara a ser false
+        ++itr;
+    }
+   
+
+    calculat = vector<bool> (N, false); //Comprova quins vertexs ja han siguit calculats o no s'han de calculat g()
+    calculat[v] = true;
+    
+    recalculG(v, profunditat);
+    
+
+    if (nodes[maxPos].empty()) {
+        bool found = false;
+        int i = maxPos;
+        while (not found) {
+            if (not nodes[i].empty()) {
+                maxPos = i;
+                found = true;
+            }
+            --i;
+        }
+    }
+}
+
+void greedyRandom(vector<bool>& D, vector<int>& NND) { //Igual que altGreedy pero amb aleatorietat
+    while (not dominador(NND)) {
+        auto it = nodes[maxPos].begin(); 
+        int rando = rand()%nodes[maxPos].size();
+
+        while (rando > 0) {
+            ++it;
+            --rando;
+        }
+
+        int v = *it;
+        nodes[maxPos].erase(it);
+
+        pos[v] = -1;
+        D[v] = true; //l'afegim al set dominant
+        actualitzaDades(v,NND);
+    }
+}
+
+
 //FUNCIONS HILL CLIMBING
 
 //SOLUCIO INICIAL
@@ -129,32 +228,58 @@ int minimal3(const vector<bool>& DV, const vector<int>& NND) {
 //PRE: SI indica quina solució inicial utilitzar
 //POST: tots els nodes pertanyen a D i per tant tots els veins d'un node també
 vector<bool> solucio_inicial(vector<int>& NND) {
-    vector<bool> s(N,false);
+    vector<bool> sol(N,false);
     NND = vector<int> (N,0);
     
     //aleatori totalment
     if(SI == 1) {
-        while(dominador(NND) != -1) {
+        while(not dominador(NND)) {
             float n = rnd->next();
             int pos = int(N*n);
-            while(s[pos]) pos = (pos+1)%N;
+            while(sol[pos]) pos = (pos+1)%N;
 
-            s[pos] = true;
+            sol[pos] = true;
             for(auto itr = neighbors[pos].begin(); itr != neighbors[pos].end(); itr++) NND[*itr]++;
         }
     }
 
-    //
-    //elseif
+    //Random Gready d'en Jaume
+    else if(SI == 2) {
+        srand(time(NULL));
+        int maxSize = 0;
+        for (int i = 0; i < N; ++i) {
+            if (neighbors[i].size() > maxSize) maxSize = neighbors[i].size();
+        }
+        maxSize += 2; //+1 per que el node també conta 1 i +1 pel 0
+        nodes = vector<unordered_set<int>>(maxSize);
+        vector<bool> D = vector<bool>(N, false); //Comença amb cap node a la solucio
+        s = vector<bool>(N, false); //Tots començen a false (0)
+        pos = vector<int>(N, 0);
+
+        maxPos = 0;
+        for (int i = 0; i < N; ++i) {
+            int p = neighbors[i].size();
+            if (p > maxPos) maxPos = p;
+            nodes[p].insert(i);
+
+            pos[i] = p;
+        }
+        greedyRandom(D,NND);
+        sol = D;
+        cout << "FI: Greedy fet!!! nombre de nodes inicials " << ND(s) << endl;
+        if(dominador(NND)) cout << "THE D IS A POSITIVE DOMINATOR SET" << endl;
+        else cout << "THE D IS NOT VALID" << endl;
+    }
 
     //tot ple
     else {
-        s = vector<bool> (N,true);
+        sol = vector<bool> (N,true);
         for(int i = 0; i < N; i++) NND[i] = neighbors[i].size();
-        return s;
     }
     
-    return s;
+    resultG = ND(sol);
+
+    return sol;
 }
 
 //HEURISTICA
@@ -164,7 +289,7 @@ vector<bool> solucio_inicial(vector<int>& NND) {
 double heruistic(const vector<bool>& v, const vector<int>& NND) {
     //maximitza nodes a ND
     if(H == 1) { 
-        if(dominador(NND) != -1) return 0.0;
+        if(not dominador(NND)) return 0.0;
         else {
             return double(N - ND(v));
         }
@@ -172,7 +297,7 @@ double heruistic(const vector<bool>& v, const vector<int>& NND) {
 
     //maximitzar sumatori nombre arestes dels vertex de D
     else if(H == 2) {
-        if(dominador(NND) != -1) return 0.0;
+        if(not dominador(NND)) return 0.0;
         else { //diferència del minim i l'actual NND
             double sum = 0, count = 0;
             for(int i = 0; i < N; i++){ 
@@ -187,7 +312,7 @@ double heruistic(const vector<bool>& v, const vector<int>& NND) {
     
     //minimitza diferència entre minNND i NND
     else if(H == 3) {
-        if(dominador(NND) != -1) return 0.0;
+        if(not dominador(NND)) return 0.0;
         else { //diferència del minim i l'actual NND
             double sum = 0;
             for(int i = 0; i < N; i++) sum += neighbors[i].size() - (NND[i] - minNND(neighbors[i].size()));
@@ -197,7 +322,7 @@ double heruistic(const vector<bool>& v, const vector<int>& NND) {
 
     //minimitza diferència entre minNND i NND per nodes de ND
     else if(H == 4) {
-        if(dominador(NND) != -1) return 0.0;
+        if(not dominador(NND)) return 0.0;
         else { //diferència del minim i l'actual NND
             double sum = 0;
             for(int i = 0; i < N; i++) {
@@ -298,6 +423,8 @@ vector<bool> simulatedAnnealing() {
     vector<bool> s = solucio_inicial(NND);
     double h = 0;
 
+    if(ND(s) < min and dominador(NND)) min = ND(s);
+
     int iter = 0;
     while(iter < T) {
         //cout << "Temperatura " << T << endl;
@@ -358,11 +485,10 @@ vector<bool> simulatedAnnealing() {
                     if(print == 1) cout << iter << ":\t" << str << endl ;
                 }
             }
-            if(ND(s) < min) min = ND(s);
+            if(ND(s) < min and dominador(NND)) min = ND(s);
         }
         iter++;
     }
-
 
     //error en algun lloc
     if(dominador(NND)) cout << "THE D IS A POSITIVE DOMINATOR SET" << endl;
@@ -370,17 +496,9 @@ vector<bool> simulatedAnnealing() {
 
     if(minimal3(s,NND)) cout << "MINIMAL!!" << endl;
     else cout << "NOT MINIMAL!!" << endl;
-
-    //print results
-    if(print == 1) {
-        cout << "MIN=" << min << endl;
-        /*if(ops.size() != 0) {
-            cout << "OPERATIONS PERFORMED:" << endl;
-            for(int i = 0; i < ops.size(); i++) cout << ops[i] << endl;
-        }
-        else cout << "NO OPERATIONS WERE PERFORDMED" << endl;*/
-    }
     
+    cout << "BEST SOLUTION FOUND = " << min << endl;
+
     return s;
 }
 
@@ -533,6 +651,7 @@ int main( int argc, char **argv ) {
         cout << "------------------------------------------" << endl;
         //vector<bool> solution = hillClimbing();
         vector<bool> solution = simulatedAnnealing();
+        cout << "Greedy Result = " << resultG << " | Local Search Result = " << ND(solution) << " | Millora = " << resultG - ND(solution) << endl;  
         cout << "------------------------------------------" << endl;
 
         results[na] = ND(solution);

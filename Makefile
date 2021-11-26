@@ -24,15 +24,15 @@ CCFLAGS = $(CCOPT) -I$(CPLEXINCDIR) -I$(CONCERTINCDIR)
 
 all: ${TARGET}
 
-basic: src/basic/basic.cpp $(OBJS)
-	${CCC} ${CXXFLAGS} -o bin/$@ $^
-
 m: src/basic/minimal1.cpp $(OBJS)
 	${CCC} ${CXXFLAGS} -o bin/$@ $^
 
-
 minimal3: src/basic/minimal3.cpp $(OBJS)
 	${CCC} ${CXXFLAGS} -o bin/$@ $^
+
+basic: src/basic/basic.cpp $(OBJS)
+	${CCC} ${CXXFLAGS} -o bin/$@ $^
+
 
 greedy: src/greedy/greedy.cpp $(OBJS)
 	${CCC} ${CXXFLAGS} -o bin/$@ $^
@@ -40,17 +40,8 @@ greedy: src/greedy/greedy.cpp $(OBJS)
 local_search: src/local_search/local_search.cpp $(OBJS)
 	${CCC} ${CXXFLAGS} -o bin/$@ $^
 
-local_search2: src/local_search/local_search2.cpp $(OBJS)
-	${CCC} ${CXXFLAGS} -o bin/$@ $^
-
 metaheuristic: src/metaheuristic/metaheuristic.cpp $(OBJS)
 	${CCC} ${CXXFLAGS} -o src/metaheuristic/$@ $^
-
-#hybrid_metaheuristic: hybrid_metaheuristic.o $(CPLOBJS)
-#	$(CCC) $(CCFLAGS) hybrid_metaheuristic.o $(CPLOBJS) -o hybrid_metaheuristic $(CCLNFLAGS)
-
-#hybrid_metaheuristic.o: hybrid_metaheuristic.cpp
-#	$(CCC) -c $(CCFLAGS) hybrid_metaheuristic.cpp -o hybrid_metaheuristic.o 
 
 #cplex: cplex.o $(CPLOBJS)
 #	$(CCC) $(CCFLAGS) cplex.o $(CPLOBJS) -o cplex $(CCLNFLAGS)

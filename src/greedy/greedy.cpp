@@ -363,42 +363,6 @@ void panGreedy() {
                 ++it2;
             }
         }
-    /*
-        for (int j = 0; j < NNPS[i]; ++j) {
-            unordered_set<int>::iterator itr = neighbors[OD[i].first].begin();
-            int max, maxPos, p = pe(*itr);
-            max = unsat[p]; //No comprovo que existeixi el primer perque tots els nodes han de tenir com a minim un vei
-            maxPos = p;
-            ++itr;
-            while (itr != neighbors[OD[i].first].end()) {
-                p = pe(*itr);
-                if (not D[*itr] and unsat[p] > max) {
-                    max = unsat[p];
-                    maxPos = p;
-                }
-                ++itr;
-            }
-            D[OD[maxPos].first] = true;
-            cout << "tu seras dominant: " << OD[maxPos].first+1 << " maxPos: " << maxPos << endl;
-            unordered_set<int>::iterator it = neighbors[OD[maxPos].first].begin();
-            while (it != neighbors[OD[maxPos].first].end()) {
-                int p1 = pe(*it);
-                ++NND[*it];
-                if (NNPS[p1] > 0) {
-                    --NNPS[p1];
-                    if (NNPS[p1] == 0) {
-                        unordered_set<int>::iterator iter = neighbors[OD[*it].first].begin();
-                        while (iter != neighbors[OD[*it].first].end()) {
-                            int p2 = pe(*iter);
-                            --unsat[p2];
-                            ++iter;
-                        }
-                    }
-                }
-                ++it;
-            }
-        }
-        */
     }
 }
 
@@ -434,6 +398,9 @@ int main( int argc, char **argv ) {
     }
     else if (algorisme == 1) {
         D = vector<bool>(N, true); //Comença amb tots els nodes a la solucio
+        for (int i = 0; i < N; ++i) {
+            NND[i] = neighbors[i].size(); //Tots els nodes son dominadors
+        }
         greedyMinimal();
         printResult();
     }

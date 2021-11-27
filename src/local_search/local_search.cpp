@@ -100,15 +100,15 @@ void printD(const vector<bool>& v) {
     cout << endl;
 }
 
-int minNND(int n) {
-    return ceil(float(n)/2);
-}
-
 //POST: retorna el nombre d'elements de D
-int ND(const vector<bool>& v) {
+int NDCalc(const vector<bool>& v) {
     int count = 0;
     for(int i = 0; i < v.size(); i++) if(v[i]) count++;
     return count;
+}
+
+int minNND(int n) {
+    return ceil(float(n)/2);
 }
 
 bool dominador(const vector<int>& NND) {
@@ -229,7 +229,7 @@ void greedyRandom(vector<bool>& D, vector<int>& NND) { //Igual que altGreedy per
 
 //PRE: SI indica quina solució inicial utilitzar
 //POST: tots els nodes pertanyen a D i per tant tots els veins d'un node també
-vector<bool> solucio_inicial(vector<int>& NND) {
+vector<bool> solucio_inicial(vector<int>& NND, int& ND) {
     vector<bool> sol(N,false);
     NND = vector<int> (N,0);
     
@@ -241,6 +241,7 @@ vector<bool> solucio_inicial(vector<int>& NND) {
             while(sol[pos]) pos = (pos+1)%N;
 
             sol[pos] = true;
+            ND++;
             for(auto itr = neighbors[pos].begin(); itr != neighbors[pos].end(); itr++) NND[*itr]++;
         }
     }
@@ -268,8 +269,9 @@ vector<bool> solucio_inicial(vector<int>& NND) {
         }
         greedyRandom(D,NND);
         sol = D;
+        ND = NDCalc(sol);
         if(print) {
-            cout << "FI: Greedy fet!!! nombre de nodes inicials " << ND(s) << endl;
+            cout << "FI: Greedy fet!!! nombre de nodes inicials " << ND << endl;
             if(dominador(NND)) cout << "THE D IS A POSITIVE DOMINATOR SET" << endl;
             else cout << "THE D IS NOT VALID" << endl;
         }
@@ -278,11 +280,11 @@ vector<bool> solucio_inicial(vector<int>& NND) {
     //tot ple
     else {
         sol = vector<bool> (N,true);
+        ND = N;
         for(int i = 0; i < N; i++) NND[i] = neighbors[i].size();
     }
     
-    resultG = ND(sol);
-
+    resultG = ND;
     return sol;
 }
 
@@ -290,12 +292,12 @@ vector<bool> solucio_inicial(vector<int>& NND) {
 
 //PRE: H indica l'heurístic que es farà servir
 //POST: retorna el valor de l'heurístic H
-double heruistic(const vector<bool>& v, const vector<int>& NND) {
+double heruistic(const vector<bool>& v, const vector<int>& NND, const int& ND) {
     //maximitza nodes a ND
     if(H == 1) { 
         if(not dominador(NND)) return -10000.0;
         else {
-            return double(N - ND(v));
+            return double(N - ND);
         }
     }
 
@@ -347,12 +349,6 @@ double heruistic(const vector<bool>& v, const vector<int>& NND) {
         return sum + 2*M;
     }
 
-    //NO FUNCIONAAAA
-    //h1 però en comptes de retornar 0 maximitza nodes a D
-    else if(H == 6) { 
-        
-    }
-
     //que pugui sortir de l'espai i tornar prioritzant adds(ND)
     else return 0.0;
 }
@@ -362,8 +358,8 @@ double heruistic(const vector<bool>& v, const vector<int>& NND) {
 
 //PRE: l'element pos no ha d'estar al set D
 //POST: s'ha afegit l'element pos a D i s'ha actualitzat NND
-void opADD(vector<bool>& v, vector<int>& NND, int pos) {
-    if(ND(v) == N) {
+void opADD(vector<bool>& v, vector<int>& NND, int& ND, int pos) {
+    if(ND == N) {
         cout << "ADD + D ple!!!" << endl;
         return;
     }
@@ -374,6 +370,7 @@ void opADD(vector<bool>& v, vector<int>& NND, int pos) {
     }
 
     v[pos] = true;
+    ND++;
     for(auto itr = neighbors[pos].begin(); itr != neighbors[pos].end(); itr++) {
         NND[*itr]++;
     }
@@ -381,8 +378,8 @@ void opADD(vector<bool>& v, vector<int>& NND, int pos) {
 
 //PRE: l'element pos ha d'estar a D
 //POST: s'ha eliminat l'element pos de D i s'ha actualitzat NND
-void opREMOVE(vector<bool>& v, vector<int>& NND, int pos) {
-    if(ND(v) == 0) {
+void opREMOVE(vector<bool>& v, vector<int>& NND, int& ND, int pos) {
+    if(ND == 0) {
         cout << "REMOVE + D buit!!!" << endl;
         return;
     }
@@ -391,6 +388,7 @@ void opREMOVE(vector<bool>& v, vector<int>& NND, int pos) {
         return;
     }
     v[pos] = false;
+    ND--;
     for(auto itr = neighbors[pos].begin(); itr != neighbors[pos].end(); itr++) {
         NND[*itr]--;
     }
@@ -398,12 +396,12 @@ void opREMOVE(vector<bool>& v, vector<int>& NND, int pos) {
 
 //PRE: l'element posND no ha d'estar a D i l'element posD sí que ho ha d'estar
 //POST: posND ara està a D i posD no. NND s'ha acutalitzat.
-void opSWAP(vector<bool>& v, vector<int>& NND, int posND, int posD) {
-    if(ND(v) == N) {
+void opSWAP(vector<bool>& v, vector<int>& NND, int& ND, int posND, int posD) {
+    if(ND == N) {
         cout << "SWAP + D ple!!!" << endl;
         return;
     }
-    else if(ND(v) == 0) {
+    else if(ND == 0) {
         cout << "SWAP + D buit!!!" << endl;
         return;
     }
@@ -429,15 +427,15 @@ vector<bool> simulatedAnnealing() {
     int min = N+1;
 
     vector<string> ops(0);
-    vector<int> NND;
-    vector<bool> s = solucio_inicial(NND);
+    int ND;             //nombre de nodes de D
+    vector<int> NND;    //Veins de D de cada node
+    vector<bool> s = solucio_inicial(NND,ND);
     double h = 0;
 
-    if(ND(s) < min and dominador(NND)) min = ND(s);
+    if(ND < min and dominador(NND)) min = ND;
 
     int iter = 0;
     while(iter < T) {
-
         for(int si = 0; si < iT; si++) {
             //nou fill
             float r1 = rnd->next(); // per l'operació
@@ -445,11 +443,12 @@ vector<bool> simulatedAnnealing() {
             float r3 = rnd->next(); //element de ND
             int r2i = int(r2*N);
             int r3i = int(r3*N);
-            while(not s[r2i] and ND(s) != 0) { r2i = (r2i+1)%N;}
-            while(s[r3i] and ND(s) != N) { r3i = (r3i+1)%N;}
+            while(not s[r2i] and ND != 0) { r2i = (r2i+1)%N;}
+            while(s[r3i] and ND != N) { r3i = (r3i+1)%N;}
 
             vector<bool> auxS = s;
             vector<int> auxNND = NND;
+            int auxND = ND;
             string str;
             double auxH = 0;
 
@@ -457,26 +456,27 @@ vector<bool> simulatedAnnealing() {
             if(O == 1 or O == 2) nops = 2.0;
             else if(O == 0) nops = 1.0;
 
-            if(r1 <= 1.0/nops and ND(s) != 0) {
-                opREMOVE(auxS,auxNND,r2i);
-                auxH = heruistic(auxS,auxNND);
-                str = "H" + to_string(auxH) + "\tREMOVE\t ND=" + to_string(ND(auxS)) + "\tElement " + to_string(r2i);
+            if(r1 <= 1.0/nops and ND != 0) {
+                opREMOVE(auxS,auxNND,auxND,r2i);
+                auxH = heruistic(auxS,auxNND,auxND);
+                str = "H" + to_string(auxH) + "\tREMOVE\t ND=" + to_string(auxND) + "\tElement " + to_string(r2i);
             }
-            else if(r1 <= 2.0/nops and O != 2  and ND(s) != N) {
-                opADD(auxS,auxNND,r3i);
-                auxH = heruistic(auxS,auxNND);
-                str = "H" + to_string(auxH) + "\tADD\t ND=" + to_string(ND(auxS)) + "\tElement " + to_string(r3i);
+            else if(r1 <= 2.0/nops and O != 2 and ND != N) {
+                opADD(auxS,auxNND,auxND,r3i);
+                auxH = heruistic(auxS,auxNND,auxND);
+                str = "H" + to_string(auxH) + "\tADD\t ND=" + to_string(auxND) + "\tElement " + to_string(r3i);
             }
-            else if(ND(s) > 0 and ND(s) < N){
-                opSWAP(auxS,auxNND,r3i,r2i);
-                auxH = heruistic(auxS,auxNND);
-                str = "H" + to_string(auxH) + "\tSWAP\t ND=" + to_string(ND(auxS)) + "\tElement of D " + to_string(r2i) + " with element " + to_string(r3i);
+            else if(ND > 0 and ND < N){
+                opSWAP(auxS,auxNND,auxND,r3i,r2i);
+                auxH = heruistic(auxS,auxNND,auxND);
+                str = "H" + to_string(auxH) + "\tSWAP\t ND=" + to_string(auxND) + "\tElement of D " + to_string(r2i) + " with element " + to_string(r3i);
             }
 
             double difH = auxH - h;
 
             if(difH > 0) {//millora 
                 NND = auxNND;
+                ND = auxND;
                 s = auxS;
                 h = auxH;
                 ops.push_back(str);
@@ -487,18 +487,17 @@ vector<bool> simulatedAnnealing() {
                 float P = exp(difH/(k*exp(-l*iter)));
                 if(p <= P) { // es fa el canvi igualment
                     NND = auxNND;
+                    ND = auxND;
                     s = auxS;
                     h = auxH;
                     ops.push_back(str);
                     if(print) cout << iter << ":\t" << str << endl ;
                 }
             }
-            if(ND(s) < min and dominador(NND)) min = ND(s);
+            if(ND < min and dominador(NND)) min = ND;
         }
         iter++;
     }
-
-    if(not dominador(NND)) cout << "ERROR! La solucio amb valor " << ND(s) << " no és un PDS" << endl;
 
     //error en algun lloc
     if(print) {
@@ -511,6 +510,7 @@ vector<bool> simulatedAnnealing() {
         cout << "BEST SOLUTION FOUND = " << min << endl;
     }
 
+    if(not dominador(NND)) cout << "ERROR! La solucio amb valor " << ND << " no és un PDS" << endl;
     return s;
 }
 
@@ -522,8 +522,9 @@ vector<bool> hillClimbing() {
     vector<string> ops(0);
     
     //valors de l'estat actual
+    int ND = 0;
     vector<int> NND = vector<int>(N,0);
-    vector<bool> s = solucio_inicial(NND);
+    vector<bool> s = solucio_inicial(NND,ND);
     double h = 0;
 
     //valors per detectar la fi de l'algorisme(local maximum)
@@ -535,61 +536,67 @@ vector<bool> hillClimbing() {
         bool millora = false;
         vector<bool> bestS;
         vector<int> bestNND;
+        int bestND = 0;
         double bestH = h;
         string str;
 
         //utilitzar els operadors per trobar un fill millor
         //REMOVE (&& ADD)
         for(int i = 0; i < N; i++) {
+            int auxND = ND;
             vector<bool> auxS = s;
             vector<int> auxNND = NND;
             if(s[i]) {
-                opREMOVE(auxS,auxNND,i);
-                double auxH = heruistic(auxS,auxNND);
+                opREMOVE(auxS,auxNND,auxND,i);
+                double auxH = heruistic(auxS,auxNND,auxND);
                 if(auxH > bestH) {
+                    bestND = auxND;
                     bestH = auxH;
                     bestS = auxS;
                     bestNND = auxNND;
-                    str = "H" + to_string(auxH) + "\tREMOVE\t ND=" + to_string(ND(auxS)) + "\tElement " + to_string(i) ;
+                    str = "H" + to_string(auxH) + "\tREMOVE\t ND=" + to_string(auxND) + "\tElement " + to_string(i) ;
                     millora = true;
                 }
             }
             else if(O == 1 or O == 3) {
-                opADD(auxS,auxNND,i);
-                double auxH = heruistic(auxS,auxNND);
+                opADD(auxS,auxNND,auxND,i);
+                double auxH = heruistic(auxS,auxNND,auxND);
                 if(auxH > bestH) {
+                    bestND = auxND;
                     bestH = auxH;
                     bestS = auxS;
                     bestNND = auxNND;
-                    str = "H" + to_string(auxH) + "\tADD\t ND=" + to_string(ND(auxS)) + "\tElement " + to_string(i) ;
+                    str = "H" + to_string(auxH) + "\tADD\t ND=" + to_string(auxND) + "\tElement " + to_string(i) ;
                     millora = true;
                 }
             }
         }
-        //cout << str << endl;
 
         //SWAP
         for(int i = 0; i < N and (O == 2 or O == 3); i++) { //iterar sobre els nodes que NO son de D
             if(s[i]) continue;
             for(int j = 0; j < N; j++) { //iterar sobre els nodes que son de D
                 if(not s[j]) continue;
+                int auxND = ND;
                 vector<bool> auxS = s;
                 vector<int> auxNND = NND;
-                opSWAP(auxS,auxNND,i,j);
-                double auxH = heruistic(auxS,auxNND);
+                opSWAP(auxS,auxNND,auxND,i,j);
+                double auxH = heruistic(auxS,auxNND,auxND);
                 //if(auxH != 0.0) cout << "H" + to_string(auxH) + "\tSWAP\t ND=" + to_string(ND(auxS)) + "\tElement of D " + to_string(j) + " with element " + to_string(i) << endl;
                 if(auxH > bestH) {
+                    bestND = auxND;
                     bestH = auxH;
                     bestS = auxS;
                     bestNND = auxNND;
-                    str = "H" + to_string(auxH) + "\tSWAP\t ND=" + to_string(ND(auxS)) + "\tElement of D " + to_string(j) + " with element " + to_string(i) ;
+                    str = "H" + to_string(auxH) + "\tSWAP\t ND=" + to_string(auxND) + "\tElement of D " + to_string(j) + " with element " + to_string(i) ;
                     millora = true;
                 }
             }
         }
 
         if(millora) {
-            if(print) cout << iteracions << ":\t" << "ND=" << ND(bestS) << "\t" << str << endl ;//<< endl ;
+            if(print) cout << iteracions << ":\t" << "ND=" << bestND << "\t" << str << endl ;//<< endl ;
+            ND = bestND;
             s = bestS;
             h = bestH;
             NND = bestNND;
@@ -617,6 +624,7 @@ vector<bool> hillClimbing() {
         }
     }
     
+    if(not dominador(NND)) cout << "ERROR! La solucio amb valor " << ND << " no és un PDS" << endl;
     return s;
 }
 
@@ -669,11 +677,11 @@ int main( int argc, char **argv ) {
         if(A == 1) solution = hillClimbing();
         else if(A == 2) solution = simulatedAnnealing();
         double ct = timer.elapsed_time(Timer::VIRTUAL);
-       
-        if(print) cout << "Greedy Result = " << resultG << " | Local Search Result = " << ND(solution) << " | Millora = " << resultG - ND(solution) << endl;  
+        int ND = NDCalc(solution);
+        if(print) cout << "Greedy Result = " << resultG << " | Local Search Result = " << ND << " | Millora = " << resultG - ND << endl;  
         if(print) cout << "------------------------------------------" << endl;
 
-        results[na] = ND(solution);
+        results[na] = ND;
         times[na] = ct;
         
         if(print) cout << "value " << results[na] << "\ttime " << times[na] << endl;

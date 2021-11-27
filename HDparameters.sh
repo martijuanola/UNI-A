@@ -2,7 +2,7 @@ EXE_FILE=./bin/local_search
 #INPUT_FILE=data/graph_jazz.txt
 OUTPUT_FILE=src/local_search/resultatsHD.txt
 
-N=3
+N=5
 
 ALGORISME=2
 OPERADORS=3

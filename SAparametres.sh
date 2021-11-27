@@ -1,5 +1,4 @@
 EXE_FILE=./bin/local_search
-#INPUT_FILE=data/graph_jazz.txt
 OUTPUT_FILE=src/local_search/resultatsKL.txt
 
 N=5
@@ -7,15 +6,15 @@ N=5
 ALGORISME=2
 OPERADORS=3
 SI=2
-HEURISTIC=2
-DEPTH=7
+HEURISTIC=1
+DEPTH=8
 
 T=10000
 ITR=15
 
 make local_search
 
-echo -e "H\tD\tMIN\tAVG\tVSD\tTIME\tTSD"> $OUTPUT_FILE
+echo -e "K\tL\tMIN\tAVG\tVSD\tTIME\tTSD"> $OUTPUT_FILE
 
 for INPUT_FILE in data/soc-gplus.txt data/graph_actors_dat.txt data/socfb-Brandeis99.txt data/graph_football.txt
 do

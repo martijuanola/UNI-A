@@ -1,4 +1,10 @@
 Coses a fer:
 
+    -Escriure tots els apartats
+
+    -acabar de comprovar heurístic
+    -fer una decisio pels parametres de SA
+
+
     -Testejar:
         -Passar els shells pk ho executin ells

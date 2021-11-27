@@ -1,0 +1,3 @@
+A	H	MIN	AVG	VSD	TIME	TSD
+data/socfb-Brandeis99.txt
+1 	1 	

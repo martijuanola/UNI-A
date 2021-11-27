@@ -238,10 +238,11 @@ vector<bool> solucio_inicial(vector<int>& NND, int& ND) {
         while(not dominador(NND)) {
             float n = rnd->next();
             int pos = int(N*n);
-            while(sol[pos]) pos = (pos+1)%N;
+            while(sol[pos]) {
+                pos = (pos+1)%N;
+            }
 
             sol[pos] = true;
-            ND++;
             for(auto itr = neighbors[pos].begin(); itr != neighbors[pos].end(); itr++) NND[*itr]++;
         }
     }
@@ -269,7 +270,6 @@ vector<bool> solucio_inicial(vector<int>& NND, int& ND) {
         }
         greedyRandom(D,NND);
         sol = D;
-        ND = NDCalc(sol);
         if(print) {
             cout << "FI: Greedy fet!!! nombre de nodes inicials " << ND << endl;
             if(dominador(NND)) cout << "THE D IS A POSITIVE DOMINATOR SET" << endl;
@@ -280,10 +280,10 @@ vector<bool> solucio_inicial(vector<int>& NND, int& ND) {
     //tot ple
     else {
         sol = vector<bool> (N,true);
-        ND = N;
         for(int i = 0; i < N; i++) NND[i] = neighbors[i].size();
     }
-    
+
+    ND = NDCalc(sol);    
     resultG = ND;
     return sol;
 }
@@ -336,17 +336,6 @@ double heruistic(const vector<bool>& v, const vector<int>& NND, const int& ND) {
             }
             return sum;
         }
-    }
-
-    //minimitza diferència entre minNND i NND però no descarta
-    else if(H == 5) {
-        double sum = 0;
-        for(int i = 0; i < N; i++) {
-            double aux = NND[i] - minNND(neighbors[i].size());
-            if(aux < 0) aux *= aux;
-            sum += - aux;
-        }
-        return sum + 2*M;
     }
 
     //que pugui sortir de l'espai i tornar prioritzant adds(ND)

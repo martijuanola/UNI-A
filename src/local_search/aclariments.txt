@@ -1,0 +1,30 @@
+Paràmetres per la busqueda local:
+
+/* ------- Execució -------*/
+
+	-i	-> Indicar el path(benchmarks a /data)
+	-n	-> Indica el nombre d'execucions
+	-p	-> Només es treurant els ouputs escencials per l'anàlisis de l'algorisme
+
+/* ------- Paràmetres Generals Busqueda Local -------*/
+
+	-a	-> Indica l'algorisme que s'utilitzarà
+			1 - Hill Climbing
+			2 - Simulate Annealing 
+	-h	-> Indica l'heurístic que s'utilitzarà
+	-o	-> Indica el conjunt d'operadors que s'utilitzarà
+	-si	-> Indica l'algorisme per obtenir la solució/estat inicial de cada execució
+
+/* ------- Paràmetres Simulated Annealing -------*/
+
+	-T	-> Indica la temperatura màxim a la que arribarà el SA
+	-iT	-> Indica el nombre d'iteracions per grau de temperatura
+	-k	-> Especifica la constant k pel càlcul de la probabilitat acceptadora quan el fill generat té un heurístic inferior a l'actual.
+	-l	-> Especifica la constant lambda pel càlcul de la probabilitat acceptadora quan el fill generat té un heurístic inferior a l'actual. 
+
+/* ------- Paràmetres Greedy per SI -------*/
+	
+	-d	-> Indica la profunditat de la cerca al actualitzar un node. Quan més gran, més lent serà l'algorisme i millors seràn els resultats.
+			1 - Resultats ràpids però amb un 15% - 25% més de vertexs
+			2 - Resultats ràpids i bastant bons
+			>10*N - Resultats propers als òptims aconseguits per algorismes greedy

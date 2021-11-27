@@ -40,17 +40,18 @@ string inputFile;
 //Global parameters
 //execution
 int n_apps = 1;
-int print = 1;
+bool print = true;
 
 //Heuristic, ops and initial solution
+int A = 2;
 int H = 0;
-int O = 0; // 0-REMOVE | 1-REMOVE+ADD | 2-REMOVE+SWAP | 3-REMOVE+ADD+SWAP
+int O = 3; // 0-REMOVE | 1-REMOVE+ADD | 2-REMOVE+SWAP | 3-REMOVE+ADD+SWAP
 int SI = 0;
 
 //SA parameters
-int T = 15000;
-int iT = 20;
-int k = 6;
+int T = 10000;
+int iT = 15;
+int k = 7;
 float l = 0.1;
 
 //Greedy Jaume
@@ -73,8 +74,9 @@ void read_parameters(int argc, char **argv) {
     while (iarg < argc) {
         if (strcmp(argv[iarg],"-i")==0) inputFile = argv[++iarg];               //input file
         else if (strcmp(argv[iarg],"-n")==0) n_apps = atoi(argv[++iarg]);       //iterations of algorithm
-        else if (strcmp(argv[iarg],"-p")==0) print = 0;                             //elimina prints
+        else if (strcmp(argv[iarg],"-p")==0) print = false;                             //elimina prints
 
+        else if (strcmp(argv[iarg],"-a")==0) A = atoi(argv[++iarg]);            //heuristic function
         else if (strcmp(argv[iarg],"-h")==0) H = atoi(argv[++iarg]);            //heuristic function
         else if (strcmp(argv[iarg],"-o")==0) O = atoi(argv[++iarg]);            //operators
         else if (strcmp(argv[iarg],"-si")==0) SI = atoi(argv[++iarg]);          //initial solution/state
@@ -266,9 +268,11 @@ vector<bool> solucio_inicial(vector<int>& NND) {
         }
         greedyRandom(D,NND);
         sol = D;
-        cout << "FI: Greedy fet!!! nombre de nodes inicials " << ND(s) << endl;
-        if(dominador(NND)) cout << "THE D IS A POSITIVE DOMINATOR SET" << endl;
-        else cout << "THE D IS NOT VALID" << endl;
+        if(print) {
+            cout << "FI: Greedy fet!!! nombre de nodes inicials " << ND(s) << endl;
+            if(dominador(NND)) cout << "THE D IS A POSITIVE DOMINATOR SET" << endl;
+            else cout << "THE D IS NOT VALID" << endl;
+        }
     }
 
     //tot ple
@@ -289,7 +293,7 @@ vector<bool> solucio_inicial(vector<int>& NND) {
 double heruistic(const vector<bool>& v, const vector<int>& NND) {
     //maximitza nodes a ND
     if(H == 1) { 
-        if(not dominador(NND)) return 0.0;
+        if(not dominador(NND)) return -10000.0;
         else {
             return double(N - ND(v));
         }
@@ -297,7 +301,7 @@ double heruistic(const vector<bool>& v, const vector<int>& NND) {
 
     //maximitzar sumatori nombre arestes dels vertex de D
     else if(H == 2) {
-        if(not dominador(NND)) return 0.0;
+        if(not dominador(NND)) return -10000.0;
         else { //diferència del minim i l'actual NND
             double sum = 0, count = 0;
             for(int i = 0; i < N; i++){ 
@@ -312,7 +316,7 @@ double heruistic(const vector<bool>& v, const vector<int>& NND) {
     
     //minimitza diferència entre minNND i NND
     else if(H == 3) {
-        if(not dominador(NND)) return 0.0;
+        if(not dominador(NND)) return -10000.0;
         else { //diferència del minim i l'actual NND
             double sum = 0;
             for(int i = 0; i < N; i++) sum += neighbors[i].size() - (NND[i] - minNND(neighbors[i].size()));
@@ -322,7 +326,7 @@ double heruistic(const vector<bool>& v, const vector<int>& NND) {
 
     //minimitza diferència entre minNND i NND per nodes de ND
     else if(H == 4) {
-        if(not dominador(NND)) return 0.0;
+        if(not dominador(NND)) return -10000.0;
         else { //diferència del minim i l'actual NND
             double sum = 0;
             for(int i = 0; i < N; i++) {
@@ -341,6 +345,12 @@ double heruistic(const vector<bool>& v, const vector<int>& NND) {
             sum += - aux;
         }
         return sum + 2*M;
+    }
+
+    //NO FUNCIONAAAA
+    //h1 però en comptes de retornar 0 maximitza nodes a D
+    else if(H == 6) { 
+        
     }
 
     //que pugui sortir de l'espai i tornar prioritzant adds(ND)
@@ -427,17 +437,15 @@ vector<bool> simulatedAnnealing() {
 
     int iter = 0;
     while(iter < T) {
-        //cout << "Temperatura " << T << endl;
 
         for(int si = 0; si < iT; si++) {
-            //cout << "SubIteration " << si << endl;
             //nou fill
             float r1 = rnd->next(); // per l'operació
             float r2 = rnd->next(); //element de D
             float r3 = rnd->next(); //element de ND
             int r2i = int(r2*N);
             int r3i = int(r3*N);
-            while(not s[r2i] and ND(s) != N) { r2i = (r2i+1)%N;}
+            while(not s[r2i] and ND(s) != 0) { r2i = (r2i+1)%N;}
             while(s[r3i] and ND(s) != N) { r3i = (r3i+1)%N;}
 
             vector<bool> auxS = s;
@@ -449,17 +457,17 @@ vector<bool> simulatedAnnealing() {
             if(O == 1 or O == 2) nops = 2.0;
             else if(O == 0) nops = 1.0;
 
-            if(r1 <= 1.0/nops) {
+            if(r1 <= 1.0/nops and ND(s) != 0) {
                 opREMOVE(auxS,auxNND,r2i);
                 auxH = heruistic(auxS,auxNND);
                 str = "H" + to_string(auxH) + "\tREMOVE\t ND=" + to_string(ND(auxS)) + "\tElement " + to_string(r2i);
             }
-            else if(r1 <= 2.0/nops and O != 2) {
+            else if(r1 <= 2.0/nops and O != 2  and ND(s) != N) {
                 opADD(auxS,auxNND,r3i);
                 auxH = heruistic(auxS,auxNND);
                 str = "H" + to_string(auxH) + "\tADD\t ND=" + to_string(ND(auxS)) + "\tElement " + to_string(r3i);
             }
-            else {
+            else if(ND(s) > 0 and ND(s) < N){
                 opSWAP(auxS,auxNND,r3i,r2i);
                 auxH = heruistic(auxS,auxNND);
                 str = "H" + to_string(auxH) + "\tSWAP\t ND=" + to_string(ND(auxS)) + "\tElement of D " + to_string(r2i) + " with element " + to_string(r3i);
@@ -472,7 +480,7 @@ vector<bool> simulatedAnnealing() {
                 s = auxS;
                 h = auxH;
                 ops.push_back(str);
-                if(print == 1) cout << iter << ":\t" << str << endl ;
+                if(print) cout << iter << ":\t" << str << endl ;
             }
             else {//igual o pitjor
                 float p = rnd->next();
@@ -482,7 +490,7 @@ vector<bool> simulatedAnnealing() {
                     s = auxS;
                     h = auxH;
                     ops.push_back(str);
-                    if(print == 1) cout << iter << ":\t" << str << endl ;
+                    if(print) cout << iter << ":\t" << str << endl ;
                 }
             }
             if(ND(s) < min and dominador(NND)) min = ND(s);
@@ -490,14 +498,18 @@ vector<bool> simulatedAnnealing() {
         iter++;
     }
 
-    //error en algun lloc
-    if(dominador(NND)) cout << "THE D IS A POSITIVE DOMINATOR SET" << endl;
-    else cout << "THE D IS NOT VALID" << endl;
+    if(not dominador(NND)) cout << "ERROR! La solucio amb valor " << ND(s) << " no és un PDS" << endl;
 
-    if(minimal3(s,NND)) cout << "MINIMAL!!" << endl;
-    else cout << "NOT MINIMAL!!" << endl;
-    
-    cout << "BEST SOLUTION FOUND = " << min << endl;
+    //error en algun lloc
+    if(print) {
+        if(dominador(NND)) cout << "THE D IS A POSITIVE DOMINATOR SET" << endl;
+        else cout << "THE D IS NOT VALID" << endl;
+
+        if(minimal3(s,NND)) cout << "MINIMAL!!" << endl;
+        else cout << "NOT MINIMAL!!" << endl;
+        
+        cout << "BEST SOLUTION FOUND = " << min << endl;
+    }
 
     return s;
 }
@@ -577,7 +589,7 @@ vector<bool> hillClimbing() {
         }
 
         if(millora) {
-            cout << iteracions << ":\t" << "ND=" << ND(bestS) << "\t" << str << endl ;//<< endl ;
+            if(print) cout << iteracions << ":\t" << "ND=" << ND(bestS) << "\t" << str << endl ;//<< endl ;
             s = bestS;
             h = bestH;
             NND = bestNND;
@@ -588,19 +600,21 @@ vector<bool> hillClimbing() {
     }
 
     //TO MUCH ITERATIONS
-    if(not fi) cout << "THE ALGORITHM WAS STOPEED. PERFORMED 50 ITERATIONS." << endl;
+    if(print) {
+        if(not fi) cout << "THE ALGORITHM WAS STOPEED. PERFORMED 50 ITERATIONS." << endl;
 
-    //error en algun lloc
-    if(dominador(NND)) cout << "THE D IS A POSITIVE DOMINATOR SET" << endl;
-    else cout << "THE D IS NOT VALID" << endl;
+        //error en algun lloc
+        if(dominador(NND)) cout << "THE D IS A POSITIVE DOMINATOR SET" << endl;
+        else cout << "THE D IS NOT VALID" << endl;
 
-    //print results
-    if(fi and false) {
-        if(ops.size() != 0) {
-            cout << "OPERATIONS PERFORMED:" << endl;
-            for(int i = 0; i < ops.size(); i++) cout << ops[i] << endl;
+        //print results
+        if(fi and false) {
+            if(ops.size() != 0) {
+                cout << "OPERATIONS PERFORMED:" << endl;
+                for(int i = 0; i < ops.size(); i++) cout << ops[i] << endl;
+            }
+            else cout << "NO OPERATIONS WERE PERFORDMED" << endl;
         }
-        else cout << "NO OPERATIONS WERE PERFORDMED" << endl;
     }
     
     return s;
@@ -645,23 +659,26 @@ int main( int argc, char **argv ) {
 
     // main loop over all applications of local search
     for (int na = 0; na < n_apps; ++na) {
-        cout << "start application " << na + 1 << endl;
-        Timer timer;
+        if(print) cout << "start application " << na + 1 << endl;
+        
 
-        cout << "------------------------------------------" << endl;
-        //vector<bool> solution = hillClimbing();
-        vector<bool> solution = simulatedAnnealing();
-        cout << "Greedy Result = " << resultG << " | Local Search Result = " << ND(solution) << " | Millora = " << resultG - ND(solution) << endl;  
-        cout << "------------------------------------------" << endl;
+        if(print) cout << "------------------------------------------" << endl;
+        vector<bool> solution;
+
+        Timer timer;
+        if(A == 1) solution = hillClimbing();
+        else if(A == 2) solution = simulatedAnnealing();
+        double ct = timer.elapsed_time(Timer::VIRTUAL);
+       
+        if(print) cout << "Greedy Result = " << resultG << " | Local Search Result = " << ND(solution) << " | Millora = " << resultG - ND(solution) << endl;  
+        if(print) cout << "------------------------------------------" << endl;
 
         results[na] = ND(solution);
-        double ct = timer.elapsed_time(Timer::VIRTUAL);
         times[na] = ct;
         
-        cout << "value " << results[na];
-        cout << "\ttime " << times[na] << endl;
+        if(print) cout << "value " << results[na] << "\ttime " << times[na] << endl;
 
-        cout << "end application " << na + 1 << endl;
+        if(print) cout << "end application " << na + 1 << endl;
     }
 
     // calculating the average of the results and computation times, and 

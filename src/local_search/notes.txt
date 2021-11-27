@@ -1,18 +1,4 @@
 Coses a fer:
 
-    -Solució Inicial:
-        -Afegir la den Jaume
-
-
-    -Heurístics
-        -fer la versió bona del de l'Adrià(acabar)
-        -Noves idees??
-
-
-    -Testejar
-        -Fer shell per probar millors paràmetres
-        -Provar amb diferents operadors
-        -Treure resultats per tots els testos en format guai
-
-    -Petites correccions:
-        -guardar ND com a variable(Time optimization)
+    -Testejar:
+        -Passar els shells pk ho executin ells

@@ -1,0 +1,115 @@
+H	D	MIN	AVG	VSD	TIME	TSD
+data/soc-gplus.txt
+1 	3 	8330	8335.00	4.55	29.90	0.86
+1 	5 	8320	8327.67	5.44	32.92	0.24
+1 	7 	8324	8330.00	4.55	31.48	0.41
+1 	9 	8325	8327.67	3.09	33.85	0.91
+
+2 	3 	8396	8408.00	9.09	33.21	0.07
+2 	5 	8404	8411.33	7.13	35.85	0.99
+2 	7 	8393	8400.33	7.13	35.18	0.36
+2 	9 	8398	8405.67	10.84	37.51	0.76
+
+
+
+data/graph_actors_dat.txt
+1 	3 	3208	3216.67	6.18	12.64	0.47
+1 	5 	3181	3184.33	3.40	15.24	0.34
+1 	7 	3180	3183.67	2.87	16.81	0.21
+1 	9 	3177	3182.33	3.86	18.21	0.11
+
+2 	3 	3379	3385.33	4.64	15.08	0.42
+2 	5 	3356	3363.33	6.60	17.98	0.46
+2 	7 	3354	3358.00	5.66	18.98	0.03
+2 	9 	3348	3349.67	2.36	20.34	0.13
+
+
+
+data/socfb-Brandeis99.txt
+1 	3 	1495	1505.33	7.32	14.54	0.46
+1 	5 	1508	1513.33	3.86	16.62	0.08
+1 	7 	1504	1509.33	4.11	16.44	0.06
+1 	9 	1500	1505.00	5.72	16.65	0.04
+
+2 	3 	1534	1545.33	9.39	15.24	0.65
+2 	5 	1537	1544.00	7.26	16.80	0.03
+2 	7 	1542	1547.00	4.55	17.11	0.07
+2 	9 	1539	1542.67	2.62	17.25	0.05
+
+
+
+data/graph_football.txt
+1 	3 	67	67.67	0.47	0.19	0.01
+1 	5 	68	68.00	0.00	0.19	0.01
+1 	7 	67	67.33	0.47	0.19	0.01
+1 	9 	67	67.33	0.47	0.20	0.01
+
+2 	3 	ADD + D ple!!!
+SWAP + D ple!!!
+SWAP + D ple!!!
+ADD + D ple!!!
+ADD + D ple!!!
+ADD + D ple!!!
+ADD + D ple!!!
+ADD + D ple!!!
+SWAP + D ple!!!
+ADD + D ple!!!
+68	68.33	0.47	0.20	0.00
+2 	5 	SWAP + D ple!!!
+SWAP + D ple!!!
+SWAP + D ple!!!
+ADD + D ple!!!
+ADD + D ple!!!
+SWAP + D ple!!!
+ADD + D ple!!!
+SWAP + D ple!!!
+ADD + D ple!!!
+ADD + D ple!!!
+SWAP + D ple!!!
+SWAP + D ple!!!
+ADD + D ple!!!
+ADD + D ple!!!
+SWAP + D ple!!!
+ADD + D ple!!!
+SWAP + D ple!!!
+SWAP + D ple!!!
+SWAP + D ple!!!
+ADD + D ple!!!
+SWAP + D ple!!!
+SWAP + D ple!!!
+ADD + D ple!!!
+ADD + D ple!!!
+SWAP + D ple!!!
+ADD + D ple!!!
+ADD + D ple!!!
+SWAP + D ple!!!
+SWAP + D ple!!!
+ADD + D ple!!!
+ADD + D ple!!!
+SWAP + D ple!!!
+SWAP + D ple!!!
+SWAP + D ple!!!
+SWAP + D ple!!!
+ADD + D ple!!!
+SWAP + D ple!!!
+ADD + D ple!!!
+SWAP + D ple!!!
+SWAP + D ple!!!
+ADD + D ple!!!
+SWAP + D ple!!!
+SWAP + D ple!!!
+SWAP + D ple!!!
+ADD + D ple!!!
+ADD + D ple!!!
+SWAP + D ple!!!
+ADD + D ple!!!
+68	68.00	0.00	0.19	0.01
+2 	7 	ADD + D ple!!!
+SWAP + D ple!!!
+SWAP + D ple!!!
+68	68.67	0.47	0.20	0.00
+2 	9 	67	67.67	0.94	0.19	0.00
+
+
+
+END

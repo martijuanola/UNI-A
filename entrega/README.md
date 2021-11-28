@@ -76,8 +76,23 @@ El Makefile que es proporciona ja inclou aquestes linies, pero s'hauran
 d'adaptar convenientment al cami on s'hagi instal.lat el CPLEX.
 
 
+## Aclariments Metaheurística 
 
+Per la metaheurística els paràmetres utilitzats son els donats per la plantilla.
 
+## Aclariments Golafre 
 
-
-
+Conté aquests parametres:
+	-i indicar el path (recomenat fitxers del folder data ../../data/<fitxer>.txt)
+	-a indicar l'algorisme que s'utilitza:
+		0 Greedy lent pero bo (Agafa els vertexs amb més nodes no satisfets)
+		1 Greedy lent i dolent (Comença ple i treu aleatoriament)
+		2 Greedy adaptatiu segons parametre -p (Semblant al 0 pero amb un parametre)
+		3 Greedy aleatori segons parametre -p (Igual que el 2 però amb certa aleatorietat)
+		
+	-p només útil pels algorismes 2 i 3. Un parametre que indica la profunditat de la cerca al actualitzar un node.
+	Com major, és més lent serà l'algorisme i millors seràn els resultats (limitat al resultat del algorisme 0)
+	Elegir el parametre depenent del resultat desitjat:
+		· 1 per un resultat molt rapid pero amb un 15% - 25% més de vertexs
+		· 2 per un resultat rapid i bastant bo
+		· >10*N per un resultat semblant al algorisme 0

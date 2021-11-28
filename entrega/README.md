@@ -59,7 +59,7 @@ s'ha d'instal.lar el software CPLEX. Per a fer-ho, s'ha de copiar el fitxer
 
 al lloc desitgat de la computadora. Per exemple, a 
 
-    /home/mjblesa/ILOG/
+    /home/r5d8/fib/A/CPLEX_program/
 
 Despres, descomprimir amb la comanda
 
@@ -69,8 +69,8 @@ Una vegada descomprimit, s'ha d'ajustar les rutes per tal que el compilador
 trobi el software del CPLEX. Això es fa al Makefile, afegint les seguents 
 dues linies:
 
-    CPLEXDIR      = /home/mjblesa/ILOG/CPLEX_Studio201/cplex
-    CONCERTDIR    = /home/mjblesa/ILOG/CPLEX_Studio201/concert
+    CPLEXDIR      = /home/r5d8/fib/A/CPLEX_program/CPLEX_Studio201/cplex
+    CONCERTDIR    = /home/r5d8/fib/A/CPLEX_program/CPLEX_Studio201/concert
 
 El Makefile que es proporciona ja inclou aquestes linies, pero s'hauran 
 d'adaptar convenientment al cami on s'hagi instal.lat el CPLEX.

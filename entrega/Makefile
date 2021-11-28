@@ -9,8 +9,6 @@ CCOPT = -m64 -O -fPIC -fexceptions -DNDEBUG -DIL_STD -std=c++17 -fpermissive -w
 
 SYSTEM     = x86-64_linux
 LIBFORMAT  = static_pic
-#CPLEXDIR      = /home/mjblesa/ILOG/CPLEX_Studio201/cplex
-#CONCERTDIR    = /home/mjblesa/ILOG/CPLEX_Studio201/concert
 CPLEXDIR      = /home/r5d8/fib/A/CPLEX_program/CPLEX_Studio201/cplex
 CONCERTDIR    = /home/r5d8/fib/A/CPLEX_program/CPLEX_Studio201/concert
 

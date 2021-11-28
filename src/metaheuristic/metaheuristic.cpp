@@ -490,7 +490,7 @@ int main( int argc, char **argv ) {
                 cout << "The best solution is a Dominating Set" << endl;
 
                 int  idx_remove = minimal3(best, NND);
-                while(idx_remove != -1 and timer.elapsed_time(Timer::VIRTUAL) < time_limit) {
+                while(idx_remove != -1) {
                   best[idx_remove] = 0;
 
                   D = best;

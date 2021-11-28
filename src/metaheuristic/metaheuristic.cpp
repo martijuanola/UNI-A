@@ -52,7 +52,6 @@ vector<unordered_set<int>> nodes;//altGreedy posicio del vector es valor del nod
 int maxPos; //altGreedy indica quina es la posicio més alta del vector on hi ha vertexs
 vector<int> pos; //altGreedy indica quina es la posicio al vector de nodes de cada vertex (no ordenat)
 vector<bool> calculat; //altGreedy per indicar quins vertexs ja s'han calculat
-int profunditat = 2;
 
 
 // string for keeping the name of the input file
@@ -74,10 +73,11 @@ typedef vector<bool> Gene;
 typedef vector<Gene> Population;
 typedef vector<int>  Pop_Fitness;
 
-int POP_SIZE = 50;
-double CROSS_PROB = 0.50;
-double MUTATE_PROB = 0.05;
-int MAX_GEN = 250;
+int POP_SIZE = 10;
+double CROSS_PROB = 0.95;
+double MUTATE_PROB = 0.10;
+int MAX_GEN = 1000;
+int profunditat = 15;
 
 Gene best_greedy;
 
@@ -289,17 +289,41 @@ void generate_pop_ini(Population& pop, Pop_Fitness& pop_fitness, Gene& best, int
         for (int j = 0; j < N; ++j) {
           D[j] = random(0,1);
         }*/
+
+        /*
+        int  idx_remove = minimal3(D, NND);
+        while(idx_remove != -1 and timer.elapsed_time(Timer::VIRTUAL) < time_limit) {
+          D[idx_remove] = 0;
+
+          NND = vector<int>(N, 0);
+          for (int i = 0; i < N; ++i) {
+              auto it = neighbors[i].begin();
+              while (it != neighbors[i].end()) {
+                  if (D[*it]) ++NND[i];
+                  ++it;
+              }
+          }
+          //cout << "Removed vertex "<< idx_remove << endl;
+          idx_remove = minimal3(D, NND);
+        }
+        */
         pop[i] = D;
 
         int fitness_current = fitness(D);
         pop_fitness[i] = fitness_current;
 
         if (fitness_current < best_fitness) {best = D; best_fitness = fitness_current;}
-        cout << "Generated initial solution: " << i << "/" << POP_SIZE;
+        cout << "Generated initial solution: " << i+1 << "/" << POP_SIZE;
+        cout << ". Fitness: " << fitness_current;
         cout << ". Time: " << (int) timer.elapsed_time(Timer::VIRTUAL) << "/" << time_limit << endl;
     }
+
     best_greedy = best;
     cout << "Generated initial solutions"  << endl;
+
+    int MDPI_size = 0;
+    for (int i = 0; i < N; ++i) MDPI_size += best[i];
+    cout << "Best Solution value: " << MDPI_size << endl;
 }
 
 Gene cross(const Gene & x, const Gene & y) {
@@ -439,14 +463,14 @@ int main( int argc, char **argv ) {
                 pop_fitness_new[child_idx] = child_fitness;
                 FITNESS_TOTAL += child_fitness;
 
-                if(best_fitness > child_fitness) {
+                if(best_fitness >= child_fitness) {
                   best_fitness = child_fitness;
                   best = child;
                   }
 
                 }
 
-                cout << "Generation: " << generation << "/" << MAX_GEN <<". Fitness Best: " << best_fitness;
+                cout << "Generation: " << generation+1 << "/" << MAX_GEN <<". Fitness Best: " << best_fitness;
                 cout << ". Fitness Total: " << FITNESS_TOTAL << ". Time: " << (int) timer.elapsed_time(Timer::VIRTUAL) <<"/"<<time_limit<<endl;
 
                 pop = pop_new;

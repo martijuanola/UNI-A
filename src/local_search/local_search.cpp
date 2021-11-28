@@ -518,9 +518,8 @@ vector<bool> hillClimbing() {
 
     //valors per detectar la fi de l'algorisme(local maximum)
     bool fi = false;
-    int max_iteracions = N;
    
-    while(not fi and iteracions < max_iteracions) { //possible maxim d'iteracions
+    while(not fi) { //possible maxim d'iteracions
         //valors pels fills millors provisionals
         bool millora = false;
         vector<bool> bestS;
@@ -592,7 +591,6 @@ vector<bool> hillClimbing() {
             ops.push_back(str);
         }
         else fi = true;
-        iteracions++;
     }
 
     //TO MUCH ITERATIONS

@@ -8,3 +8,7 @@ Coses a fer:
 
     -Testejar:
         -Passar els shells pk ho executin ells
+
+
+
+

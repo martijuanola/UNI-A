@@ -8,7 +8,7 @@ ALGORISME=2
 OPERADORS=3
 SI=2
 
-DEPTH=13
+DEPTH=2
 
 make local_search
 

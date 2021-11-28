@@ -57,6 +57,13 @@ float l = 0.1;
 //Greedy Jaume
 int profunditat = 1;
 
+typedef struct{
+    vector<bool> D = vector<bool>(N,false); //elements de D
+    vector<int> NND = vector<int>(N,0);     //Veins de D de cada node
+    int ND = 0;                             //nombre de nodes de D
+    double h = 0;                           //valor de l'heurístic
+} estat;
+
 inline int stoi(string &s) {
 
   return atoi(s.c_str());
@@ -271,7 +278,7 @@ vector<bool> solucio_inicial(vector<int>& NND, int& ND) {
         greedyRandom(D,NND);
         sol = D;
         if(print) {
-            cout << "FI: Greedy fet!!! nombre de nodes inicials " << ND << endl;
+            cout << "FI: Greedy fet!!! nombre de nodes inicials " << NDCalc(sol) << endl;
             if(dominador(NND)) cout << "THE D IS A POSITIVE DOMINATOR SET" << endl;
             else cout << "THE D IS NOT VALID" << endl;
         }
@@ -316,18 +323,8 @@ double heruistic(const vector<bool>& v, const vector<int>& NND, const int& ND) {
         }
     }
     
-    //minimitza diferència entre minNND i NND
-    else if(H == 3) {
-        if(not dominador(NND)) return -10000.0;
-        else { //diferència del minim i l'actual NND
-            double sum = 0;
-            for(int i = 0; i < N; i++) sum += neighbors[i].size() - (NND[i] - minNND(neighbors[i].size()));
-            return sum;
-        }
-    }
-
     //minimitza diferència entre minNND i NND per nodes de ND
-    else if(H == 4) {
+    else if(H == 3) {
         if(not dominador(NND)) return -10000.0;
         else { //diferència del minim i l'actual NND
             double sum = 0;
@@ -414,14 +411,12 @@ void opSWAP(vector<bool>& v, vector<int>& NND, int& ND, int posND, int posD) {
 vector<bool> simulatedAnnealing() {
 
     int min = N+1;
+    vector<string> ops = vector<string>(0); //operacions realitzades sobre s
 
-    vector<string> ops(0);
-    int ND;             //nombre de nodes de D
-    vector<int> NND;    //Veins de D de cada node
-    vector<bool> s = solucio_inicial(NND,ND);
-    double h = 0;
+    estat actual;
+    actual.D = solucio_inicial(actual.NND,actual.ND);
 
-    if(ND < min and dominador(NND)) min = ND;
+    if(actual.ND < min and dominador(actual.NND)) min = actual.ND;
 
     int iter = 0;
     while(iter < T) {
@@ -432,42 +427,37 @@ vector<bool> simulatedAnnealing() {
             float r3 = rnd->next(); //element de ND
             int r2i = int(r2*N);
             int r3i = int(r3*N);
-            while(not s[r2i] and ND != 0) { r2i = (r2i+1)%N;}
-            while(s[r3i] and ND != N) { r3i = (r3i+1)%N;}
+            while(not actual.D[r2i] and actual.ND != 0) { r2i = (r2i+1)%N;}
+            while(actual.D[r3i] and actual.ND != N) { r3i = (r3i+1)%N;}
 
-            vector<bool> auxS = s;
-            vector<int> auxNND = NND;
-            int auxND = ND;
+            estat nou = actual;
+            nou.h = 0;
             string str;
-            double auxH = 0;
 
             float nops = 3.0;
             if(O == 1 or O == 2) nops = 2.0;
             else if(O == 0) nops = 1.0;
 
-            if(r1 <= 1.0/nops and ND != 0) {
-                opREMOVE(auxS,auxNND,auxND,r2i);
-                auxH = heruistic(auxS,auxNND,auxND);
-                str = "H" + to_string(auxH) + "\tREMOVE\t ND=" + to_string(auxND) + "\tElement " + to_string(r2i);
+            if(r1 <= 1.0/nops and actual.ND != 0) {
+                opREMOVE(nou.D,nou.NND,nou.ND,r2i);
+                nou.h = heruistic(nou.D,nou.NND,nou.ND);
+                str = "H" + to_string(nou.h) + "\tREMOVE\t ND=" + to_string(nou.ND) + "\tElement " + to_string(r2i);
             }
-            else if(r1 <= 2.0/nops and O != 2 and ND != N) {
-                opADD(auxS,auxNND,auxND,r3i);
-                auxH = heruistic(auxS,auxNND,auxND);
-                str = "H" + to_string(auxH) + "\tADD\t ND=" + to_string(auxND) + "\tElement " + to_string(r3i);
+            else if(r1 <= 2.0/nops and O != 2 and actual.ND != N) {
+                opADD(nou.D,nou.NND,nou.ND,r3i);
+                nou.h = heruistic(nou.D,nou.NND,nou.ND);
+                str = "H" + to_string(nou.h) + "\tADD\t ND=" + to_string(nou.ND) + "\tElement " + to_string(r3i);
             }
-            else if(ND > 0 and ND < N){
-                opSWAP(auxS,auxNND,auxND,r3i,r2i);
-                auxH = heruistic(auxS,auxNND,auxND);
-                str = "H" + to_string(auxH) + "\tSWAP\t ND=" + to_string(auxND) + "\tElement of D " + to_string(r2i) + " with element " + to_string(r3i);
+            else if(actual.ND > 0 and actual.ND < N){
+                opSWAP(nou.D,nou.NND,nou.ND,r3i,r2i);
+                nou.h = heruistic(nou.D,nou.NND,nou.ND);
+                str = "H" + to_string(nou.h) + "\tSWAP\t ND=" + to_string(nou.ND) + "\tElement of D " + to_string(r2i) + " with element " + to_string(r3i);
             }
 
-            double difH = auxH - h;
+            double difH = nou.h - actual.h;
 
             if(difH > 0) {//millora 
-                NND = auxNND;
-                ND = auxND;
-                s = auxS;
-                h = auxH;
+                actual = nou;
                 ops.push_back(str);
                 if(print) cout << iter << ":\t" << str << endl ;
             }
@@ -475,86 +465,70 @@ vector<bool> simulatedAnnealing() {
                 float p = rnd->next();
                 float P = exp(difH/(k*exp(-l*iter)));
                 if(p <= P) { // es fa el canvi igualment
-                    NND = auxNND;
-                    ND = auxND;
-                    s = auxS;
-                    h = auxH;
+                    actual = nou;
                     ops.push_back(str);
                     if(print) cout << iter << ":\t" << str << endl ;
                 }
             }
-            if(ND < min and dominador(NND)) min = ND;
+            if(actual.ND < min and dominador(actual.NND)) min = actual.ND;
         }
         iter++;
     }
 
     //error en algun lloc
     if(print) {
-        if(dominador(NND)) cout << "THE D IS A POSITIVE DOMINATOR SET" << endl;
+        if(dominador(actual.NND)) cout << "THE D IS A POSITIVE DOMINATOR SET" << endl;
         else cout << "THE D IS NOT VALID" << endl;
 
-        if(minimal3(s,NND)) cout << "MINIMAL!!" << endl;
+        if(minimal3(actual.D,actual.NND)) cout << "MINIMAL!!" << endl;
         else cout << "NOT MINIMAL!!" << endl;
         
         cout << "BEST SOLUTION FOUND = " << min << endl;
     }
 
-    if(not dominador(NND)) cout << "ERROR! La solucio amb valor " << ND << " no és un PDS" << endl;
-    return s;
+    if(not dominador(actual.NND)) cout << "ERROR! La solucio amb valor " << actual.ND << " no és un PDS" << endl;
+    return actual.D;
 }
 
 //PRE: graf inicialitzat
 //POST: retorna una solució(paràmetres H, O i SI)
 vector<bool> hillClimbing() {
     //valors per les iteracions
+    bool millora = true;
     int iteracions = 0;
     vector<string> ops(0);
     
     //valors de l'estat actual
-    int ND = 0;
-    vector<int> NND = vector<int>(N,0);
-    vector<bool> s = solucio_inicial(NND,ND);
-    double h = 0;
+    estat actual;
+    actual.D = solucio_inicial(actual.NND,actual.ND);
 
-    //valors per detectar la fi de l'algorisme(local maximum)
-    bool fi = false;
-   
-    while(not fi) { //possible maxim d'iteracions
-        //valors pels fills millors provisionals
-        bool millora = false;
-        vector<bool> bestS;
-        vector<int> bestNND;
-        int bestND = 0;
-        double bestH = h;
+    while(millora) { //possible maxim d'iteracions
+        millora = false;
+        
+        estat best = actual; //valors pels fills millors provisionals
         string str;
+        
 
         //utilitzar els operadors per trobar un fill millor
         //REMOVE (&& ADD)
         for(int i = 0; i < N; i++) {
-            int auxND = ND;
-            vector<bool> auxS = s;
-            vector<int> auxNND = NND;
-            if(s[i]) {
-                opREMOVE(auxS,auxNND,auxND,i);
-                double auxH = heruistic(auxS,auxNND,auxND);
-                if(auxH > bestH) {
-                    bestND = auxND;
-                    bestH = auxH;
-                    bestS = auxS;
-                    bestNND = auxNND;
-                    str = "H" + to_string(auxH) + "\tREMOVE\t ND=" + to_string(auxND) + "\tElement " + to_string(i) ;
+            estat nou = actual;
+
+            if(actual.D[i]) {
+                opREMOVE(nou.D,nou.NND,nou.ND,i);
+                nou.h = heruistic(nou.D,nou.NND,nou.ND);
+                if(nou.h > best.h) {
+                    best = nou;
+                    str = "H" + to_string(nou.h) + "\tREMOVE\t ND=" + to_string(nou.ND) + "\tElement " + to_string(i) ;
                     millora = true;
                 }
             }
             else if(O == 1 or O == 3) {
-                opADD(auxS,auxNND,auxND,i);
-                double auxH = heruistic(auxS,auxNND,auxND);
-                if(auxH > bestH) {
-                    bestND = auxND;
-                    bestH = auxH;
-                    bestS = auxS;
-                    bestNND = auxNND;
-                    str = "H" + to_string(auxH) + "\tADD\t ND=" + to_string(auxND) + "\tElement " + to_string(i) ;
+                opADD(nou.D,nou.NND,nou.ND,i);
+                nou.h = heruistic(nou.D,nou.NND,nou.ND);
+                if(nou.h > best.h) {
+                    best = nou;
+                    str = "H" + to_string(nou.h) + "\tADD\t ND=" + to_string(nou.ND) + "\tElement " + to_string(i) ;
                     millora = true;
                 }
             }
@@ -562,47 +536,37 @@ vector<bool> hillClimbing() {
 
         //SWAP
         for(int i = 0; i < N and (O == 2 or O == 3); i++) { //iterar sobre els nodes que NO son de D
-            if(s[i]) continue;
+            if(actual.D[i]) continue;
             for(int j = 0; j < N; j++) { //iterar sobre els nodes que son de D
-                if(not s[j]) continue;
-                int auxND = ND;
-                vector<bool> auxS = s;
-                vector<int> auxNND = NND;
-                opSWAP(auxS,auxNND,auxND,i,j);
-                double auxH = heruistic(auxS,auxNND,auxND);
-                //if(auxH != 0.0) cout << "H" + to_string(auxH) + "\tSWAP\t ND=" + to_string(ND(auxS)) + "\tElement of D " + to_string(j) + " with element " + to_string(i) << endl;
-                if(auxH > bestH) {
-                    bestND = auxND;
-                    bestH = auxH;
-                    bestS = auxS;
-                    bestNND = auxNND;
-                    str = "H" + to_string(auxH) + "\tSWAP\t ND=" + to_string(auxND) + "\tElement of D " + to_string(j) + " with element " + to_string(i) ;
+                if(not actual.D[j]) continue;
+                
+                estat nou = actual;
+                opSWAP(nou.D,nou.NND,nou.ND,i,j);
+                nou.h = heruistic(nou.D,nou.NND,nou.ND);
+                if(nou.h > best.h) {
+                    best = nou;
+                    str = "H" + to_string(nou.h) + "\tSWAP\t ND=" + to_string(nou.ND) + "\tElement of D " + to_string(j) + " with element " + to_string(i) ;
                     millora = true;
                 }
             }
         }
 
         if(millora) {
-            if(print) cout << iteracions << ":\t" << "ND=" << bestND << "\t" << str << endl ;//<< endl ;
-            ND = bestND;
-            s = bestS;
-            h = bestH;
-            NND = bestNND;
+            if(print) cout << iteracions << ":\t" << "ND=" << best.ND << "\t" << str << endl ;//<< endl ;
+            actual = best;
             ops.push_back(str);
         }
-        else fi = true;
+        iteracions++;
     }
 
     //TO MUCH ITERATIONS
     if(print) {
-        if(not fi) cout << "THE ALGORITHM WAS STOPEED. PERFORMED 50 ITERATIONS." << endl;
-
         //error en algun lloc
-        if(dominador(NND)) cout << "THE D IS A POSITIVE DOMINATOR SET" << endl;
+        if(dominador(actual.NND)) cout << "THE D IS A POSITIVE DOMINATOR SET" << endl;
         else cout << "THE D IS NOT VALID" << endl;
 
         //print results
-        if(fi and false) {
+        if(false) {
             if(ops.size() != 0) {
                 cout << "OPERATIONS PERFORMED:" << endl;
                 for(int i = 0; i < ops.size(); i++) cout << ops[i] << endl;
@@ -611,8 +575,8 @@ vector<bool> hillClimbing() {
         }
     }
     
-    if(not dominador(NND)) cout << "ERROR! La solucio amb valor " << ND << " no és un PDS" << endl;
-    return s;
+    if(not dominador(actual.NND)) cout << "ERROR! La solucio amb valor " << actual.ND << " no és un PDS" << endl;
+    return actual.D;
 }
 
 /**********

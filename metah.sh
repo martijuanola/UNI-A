@@ -1,0 +1,10 @@
+./bin/metaheuristic -i data/graph_actors_dat.txt -n_apps 5 > resultMH/graph_actors_datRESULT.txt
+./bin/metaheuristic -i data/ego-facebook.txt -n_apps 5  > resultMH/ego-facebookRESULT.txt
+./bin/metaheuristic -i data/graph_CA-AstroPh.txt -n_apps 5  > resultMH/graph_CA-AstroPhRESULT.txt
+./bin/metaheuristic -i data/graph_CA-CondMat.txt -n_apps 5  > resultMH/graph_CA-CondMatRESULT.txt
+./bin/metaheuristic -i data/graph_CA-HepPh.txt -n_apps 5  > resultMH/graph_CA-HepPhRESULT.txt
+./bin/metaheuristic -i data/graph_football.txt -n_apps 5  > resultMH/graph_footballRESULT.txt
+./bin/metaheuristic -i data/graph_jazz.txt -n_apps 5  > resultMH/graph_jazzRESULT.txt
+./bin/metaheuristic -i data/socfb-Brandeis99.txt -n_apps 5  > resultMH/socfb-Brandeis99RESULT.txt
+./bin/metaheuristic -i data/socfb-Mich67.txt -n_apps 5  > resultMH/socfb-Mich67RESULT.txt
+./bin/metaheuristic -i data/soc-gplus.txt -n_apps 5  > resultMH/soc-gplusRESULT.txt

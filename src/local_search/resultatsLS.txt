@@ -1,0 +1,42 @@
+MIN	AVG	VSD	TIME	TSD
+data/soc-gplus.txt
+8338	8347.40	7.39	30.73	0.74
+
+
+data/graph_CA-CondMat.txt
+9776	9779.20	2.93	28.15	1.19
+
+
+data/graph_CA-AstroPh.txt
+6954	6961.80	6.31	75.90	7.63
+
+
+data/graph_CA-HepPh.txt
+4811	4816.00	3.90	27.09	0.56
+
+
+data/graph_actors_dat.txt
+3165	3169.80	3.43	22.54	0.96
+
+
+data/ego-facebook.txt
+1974	1975.60	1.02	5.69	0.10
+
+
+data/socfb-Brandeis99.txt
+1478	1482.00	3.95	29.04	0.28
+
+
+data/socfb-Mich67.txt
+1419	1421.40	1.62	18.16	2.57
+
+
+data/graph_jazz.txt
+81	83.00	1.26	0.44	0.03
+
+
+data/graph_football.txt
+66	67.00	0.89	0.36	0.01
+
+
+END

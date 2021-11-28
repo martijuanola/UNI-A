@@ -74,10 +74,10 @@ typedef vector<Gene> Population;
 typedef vector<int>  Pop_Fitness;
 
 int POP_SIZE = 10;
-double CROSS_PROB = 0.95;
-double MUTATE_PROB = 0.10;
-int MAX_GEN = 1000;
-int profunditat = 15;
+double CROSS_PROB = 0.8;
+double MUTATE_PROB = 0.15;
+int MAX_GEN = 500;
+int profunditat = 6;
 
 Gene best_greedy;
 
@@ -437,7 +437,7 @@ int main( int argc, char **argv ) {
           //we iterate up to the maximum generation or...
           generation < MAX_GEN and
           //until our total fitness does not improve or...
-          //FITNESS_TOTAL != FITNESS_ANT and
+          FITNESS_TOTAL != FITNESS_ANT and
           //until we reach the time limit.
           timer.elapsed_time(Timer::VIRTUAL) < time_limit-10;
           ++generation) {
@@ -490,7 +490,7 @@ int main( int argc, char **argv ) {
                 cout << "The best solution is a Dominating Set" << endl;
 
                 int  idx_remove = minimal3(best, NND);
-                while(idx_remove != -1 and timer.elapsed_time(Timer::VIRTUAL) < time_limit) {
+                while(idx_remove != -1) {
                   best[idx_remove] = 0;
 
                   D = best;

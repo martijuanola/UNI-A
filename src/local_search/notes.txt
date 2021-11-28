@@ -1,18 +1,14 @@
 Coses a fer:
 
-    -Solució Inicial:
-        -Afegir la den Jaume
+    -Escriure tots els apartats
+
+    -acabar de comprovar heurístic
+    -fer una decisio pels parametres de SA
 
 
-    -Heurístics
-        -fer la versió bona del de l'Adrià(acabar)
-        -Noves idees??
+    -Testejar:
+        -Passar els shells pk ho executin ells
 
 
-    -Testejar
-        -Fer shell per probar millors paràmetres
-        -Provar amb diferents operadors
-        -Treure resultats per tots els testos en format guai
 
-    -Petites correccions:
-        -guardar ND com a variable(Time optimization)
+

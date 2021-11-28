@@ -2,8 +2,8 @@
 #include <config.h>
 #endif
 
-#include "../Timer.h"
-#include "../Random.h"
+#include "Timer.h"
+#include "Random.h"
 #include <vector>
 #include <string>
 #include <stdio.h>

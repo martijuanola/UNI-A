@@ -74,10 +74,10 @@ typedef vector<Gene> Population;
 typedef vector<int>  Pop_Fitness;
 
 int POP_SIZE = 10;
-double CROSS_PROB = 0.95;
-double MUTATE_PROB = 0.10;
+double CROSS_PROB = 0.8;
+double MUTATE_PROB = 0.15;
 int MAX_GEN = 1000;
-int profunditat = 15;
+int profunditat = 6;
 
 Gene best_greedy;
 

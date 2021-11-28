@@ -1,0 +1,7 @@
+N: 10042
+Number of vertexs in solution: 3196
+It's a Positive Influence Dominator Set
+It's NOT minimal! Redundant vertex: 43
+
+
+	time 12.8589050000

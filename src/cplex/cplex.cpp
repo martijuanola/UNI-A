@@ -151,8 +151,6 @@ void run_cplex(Timer& timer) {
 		
         IloCplex cpl(model);
 
-        //cpl.setParam(IloCplex::RootAlg, IloCplex::Dual);
-        //cpl.setParam(IloCplex::RootAlg, IloCplex::Primal);
         cpl.setParam(IloCplex::TiLim, time_limit);
         cpl.setParam(IloCplex::EpGap, 0.0);
         cpl.setParam(IloCplex::EpAGap, 0.0);
@@ -168,10 +166,34 @@ void run_cplex(Timer& timer) {
             double newTime = timer.elapsed_time(Timer::VIRTUAL);
             double lastVal = double(cpl.getObjValue());
             double lastGap = 100.0*cpl.getMIPRelativeGap();
+            
+            IloNumArray sol(env);
+            cpl.getValues(sol, chosen);
+            
+            bool correcte = true;
+            
+            for (int i = 0; i < n_of_nodes; ++i)
+            {
+				for (int j = 0; j < neighbors.size(); ++j)
+				{
+					int count = 0;
+					
+					set<int>::iterator it = neighbors[i].begin();
+					while (it != neighbors[i].end())
+					{
+						if (sol[*it]) ++count;
+						++it;
+					}
+					
+					if (count < IloCeil(neighbors[i].size()/2.0)) correcte = false;
+				}
+			}
+            
             if (lastGap < 0.0) lastGap *= -1.0;
             cout << "value " << lastVal;
             cout << "\ttime " << newTime;
             cout << "\tgap " << lastGap << endl;
+            cout << "Correcte: " << (correcte ? "YES" : "NO") << endl;
             if (cpl.getStatus() == IloAlgorithm::Optimal) {
                 cout << "optimality proven" << endl;
             }
@@ -220,4 +242,3 @@ int main( int argc, char **argv ) {
     run_cplex(timer);
 
 }
-

@@ -1,0 +1,664 @@
+METAHEURISTIC
+start application 1
+Generated initial solution: 1/10. Fitness: 29123. Time: 17/3200.00
+Generated initial solution: 2/10. Fitness: 29044. Time: 32/3200.00
+Generated initial solution: 3/10. Fitness: 28754. Time: 47/3200.00
+Generated initial solution: 4/10. Fitness: 28844. Time: 62/3200.00
+Generated initial solution: 5/10. Fitness: 29241. Time: 79/3200.00
+Generated initial solution: 6/10. Fitness: 29193. Time: 94/3200.00
+Generated initial solution: 7/10. Fitness: 29218. Time: 111/3200.00
+Generated initial solution: 8/10. Fitness: 29345. Time: 127/3200.00
+Generated initial solution: 9/10. Fitness: 29234. Time: 142/3200.00
+Generated initial solution: 10/10. Fitness: 28683. Time: 157/3200.00
+Generated initial solutions
+Best Solution value: 4916
+Generation: 1/500. Fitness Best: 28683. Fitness Total: 532001. Time: 158/3200.00
+Generation: 2/500. Fitness Best: 28683. Fitness Total: 507289. Time: 158/3200.00
+Generation: 3/500. Fitness Best: 28683. Fitness Total: 531182. Time: 158/3200.00
+Generation: 4/500. Fitness Best: 28683. Fitness Total: 494708. Time: 158/3200.00
+Generation: 5/500. Fitness Best: 28683. Fitness Total: 524652. Time: 158/3200.00
+Generation: 6/500. Fitness Best: 28683. Fitness Total: 529077. Time: 159/3200.00
+Generation: 7/500. Fitness Best: 28683. Fitness Total: 441719. Time: 159/3200.00
+Generation: 8/500. Fitness Best: 28683. Fitness Total: 390309. Time: 159/3200.00
+Generation: 9/500. Fitness Best: 28683. Fitness Total: 389916. Time: 159/3200.00
+Generation: 10/500. Fitness Best: 28683. Fitness Total: 391322. Time: 160/3200.00
+Generation: 11/500. Fitness Best: 28683. Fitness Total: 385624. Time: 160/3200.00
+Generation: 12/500. Fitness Best: 28683. Fitness Total: 369939. Time: 160/3200.00
+Generation: 13/500. Fitness Best: 28683. Fitness Total: 343090. Time: 160/3200.00
+Generation: 14/500. Fitness Best: 28683. Fitness Total: 340119. Time: 161/3200.00
+Generation: 15/500. Fitness Best: 28683. Fitness Total: 322716. Time: 161/3200.00
+Generation: 16/500. Fitness Best: 28683. Fitness Total: 305485. Time: 161/3200.00
+Generation: 17/500. Fitness Best: 28683. Fitness Total: 303471. Time: 161/3200.00
+Generation: 18/500. Fitness Best: 28683. Fitness Total: 301413. Time: 162/3200.00
+Generation: 19/500. Fitness Best: 28683. Fitness Total: 301121. Time: 162/3200.00
+Generation: 20/500. Fitness Best: 28683. Fitness Total: 300537. Time: 162/3200.00
+Generation: 21/500. Fitness Best: 28683. Fitness Total: 299959. Time: 162/3200.00
+Generation: 22/500. Fitness Best: 28683. Fitness Total: 299664. Time: 162/3200.00
+Generation: 23/500. Fitness Best: 28683. Fitness Total: 298510. Time: 163/3200.00
+Generation: 24/500. Fitness Best: 28683. Fitness Total: 298505. Time: 163/3200.00
+Generation: 25/500. Fitness Best: 28683. Fitness Total: 298500. Time: 163/3200.00
+Generation: 26/500. Fitness Best: 28683. Fitness Total: 302004. Time: 163/3200.00
+Generation: 27/500. Fitness Best: 28683. Fitness Total: 301927. Time: 164/3200.00
+Generation: 28/500. Fitness Best: 28683. Fitness Total: 298192. Time: 164/3200.00
+Generation: 29/500. Fitness Best: 28683. Fitness Total: 298192. Time: 164/3200.00
+The best solution is a Dominating Set
+Removed vertex 16
+Removed vertex 172
+Removed vertex 266
+Removed vertex 339
+Removed vertex 397
+Removed vertex 406
+Removed vertex 408
+Removed vertex 430
+Removed vertex 435
+Removed vertex 441
+Removed vertex 444
+Removed vertex 450
+Removed vertex 453
+Removed vertex 468
+Removed vertex 469
+Removed vertex 477
+Removed vertex 482
+Removed vertex 483
+Removed vertex 490
+Removed vertex 492
+Removed vertex 496
+Removed vertex 497
+Removed vertex 499
+Removed vertex 506
+Removed vertex 511
+Removed vertex 516
+Removed vertex 519
+Removed vertex 530
+Removed vertex 534
+Removed vertex 535
+Removed vertex 552
+Removed vertex 562
+Removed vertex 576
+Removed vertex 589
+Removed vertex 598
+Removed vertex 605
+Removed vertex 616
+Removed vertex 885
+Removed vertex 960
+Removed vertex 1057
+Removed vertex 1139
+Removed vertex 1166
+Removed vertex 1271
+Removed vertex 1362
+Removed vertex 1381
+Removed vertex 1541
+Removed vertex 1543
+Removed vertex 1781
+Removed vertex 2053
+Removed vertex 2057
+Removed vertex 2255
+Removed vertex 2279
+Removed vertex 2566
+Removed vertex 2573
+Removed vertex 2670
+Removed vertex 3182
+Removed vertex 3246
+Removed vertex 4300
+Removed vertex 4399
+Removed vertex 4635
+Removed vertex 5143
+Removed vertex 5990
+Removed vertex 6010
+Removed vertex 6032
+Removed vertex 6286
+Removed vertex 6337
+Removed vertex 6391
+Removed vertex 7415
+Removed vertex 7535
+Removed vertex 7970
+Removed vertex 8106
+Removed vertex 8409
+Removed vertex 8518
+Removed vertex 8579
+Removed vertex 9067
+Removed vertex 9570
+Removed vertex 10002
+Removed vertex 10143
+Removed vertex 10469
+Removed vertex 10815
+Removed vertex 11155
+Removed vertex 11605
+Removed vertex 11606
+Removed vertex 11862
+The best solution is a Minimal Dominating Set
+value 4832	time 165.01
+end application 1
+
+start application 2
+Generated initial solution: 1/10. Fitness: 28836. Time: 15/3200.00
+Generated initial solution: 2/10. Fitness: 29461. Time: 32/3200.00
+Generated initial solution: 3/10. Fitness: 28953. Time: 48/3200.00
+Generated initial solution: 4/10. Fitness: 29235. Time: 66/3200.00
+Generated initial solution: 5/10. Fitness: 29501. Time: 83/3200.00
+Generated initial solution: 6/10. Fitness: 28685. Time: 99/3200.00
+Generated initial solution: 7/10. Fitness: 29313. Time: 116/3200.00
+Generated initial solution: 8/10. Fitness: 28809. Time: 132/3200.00
+Generated initial solution: 9/10. Fitness: 30148. Time: 148/3200.00
+Generated initial solution: 10/10. Fitness: 29402. Time: 164/3200.00
+Generated initial solutions
+Best Solution value: 4893
+Generation: 1/500. Fitness Best: 28685. Fitness Total: 414970. Time: 164/3200.00
+Generation: 2/500. Fitness Best: 28685. Fitness Total: 415591. Time: 164/3200.00
+Generation: 3/500. Fitness Best: 28685. Fitness Total: 430462. Time: 164/3200.00
+Generation: 4/500. Fitness Best: 28685. Fitness Total: 428734. Time: 165/3200.00
+Generation: 5/500. Fitness Best: 28685. Fitness Total: 375735. Time: 165/3200.00
+Generation: 6/500. Fitness Best: 28685. Fitness Total: 340030. Time: 165/3200.00
+Generation: 7/500. Fitness Best: 28685. Fitness Total: 325231. Time: 165/3200.00
+Generation: 8/500. Fitness Best: 28685. Fitness Total: 304980. Time: 166/3200.00
+Generation: 9/500. Fitness Best: 28685. Fitness Total: 299246. Time: 166/3200.00
+Generation: 10/500. Fitness Best: 28685. Fitness Total: 298495. Time: 166/3200.00
+Generation: 11/500. Fitness Best: 28685. Fitness Total: 299534. Time: 166/3200.00
+Generation: 12/500. Fitness Best: 28685. Fitness Total: 298460. Time: 166/3200.00
+Generation: 13/500. Fitness Best: 28685. Fitness Total: 298457. Time: 167/3200.00
+Generation: 14/500. Fitness Best: 28685. Fitness Total: 298455. Time: 167/3200.00
+Generation: 15/500. Fitness Best: 28685. Fitness Total: 298957. Time: 167/3200.00
+Generation: 16/500. Fitness Best: 28685. Fitness Total: 302936. Time: 167/3200.00
+Generation: 17/500. Fitness Best: 28685. Fitness Total: 300940. Time: 168/3200.00
+Generation: 18/500. Fitness Best: 28685. Fitness Total: 302404. Time: 168/3200.00
+Generation: 19/500. Fitness Best: 28685. Fitness Total: 298921. Time: 168/3200.00
+Generation: 20/500. Fitness Best: 28685. Fitness Total: 298450. Time: 168/3200.00
+Generation: 21/500. Fitness Best: 28685. Fitness Total: 298452. Time: 168/3200.00
+Generation: 22/500. Fitness Best: 28685. Fitness Total: 299105. Time: 169/3200.00
+Generation: 23/500. Fitness Best: 28685. Fitness Total: 298509. Time: 169/3200.00
+Generation: 24/500. Fitness Best: 28685. Fitness Total: 300447. Time: 169/3200.00
+Generation: 25/500. Fitness Best: 28685. Fitness Total: 302952. Time: 169/3200.00
+Generation: 26/500. Fitness Best: 28685. Fitness Total: 298458. Time: 169/3200.00
+Generation: 27/500. Fitness Best: 28685. Fitness Total: 298458. Time: 170/3200.00
+The best solution is a Dominating Set
+Removed vertex 172
+Removed vertex 210
+Removed vertex 291
+Removed vertex 339
+Removed vertex 345
+Removed vertex 389
+Removed vertex 397
+Removed vertex 406
+Removed vertex 408
+Removed vertex 430
+Removed vertex 434
+Removed vertex 441
+Removed vertex 444
+Removed vertex 450
+Removed vertex 468
+Removed vertex 477
+Removed vertex 482
+Removed vertex 483
+Removed vertex 490
+Removed vertex 492
+Removed vertex 496
+Removed vertex 497
+Removed vertex 506
+Removed vertex 511
+Removed vertex 516
+Removed vertex 519
+Removed vertex 534
+Removed vertex 535
+Removed vertex 552
+Removed vertex 562
+Removed vertex 576
+Removed vertex 577
+Removed vertex 589
+Removed vertex 598
+Removed vertex 605
+Removed vertex 616
+Removed vertex 621
+Removed vertex 885
+Removed vertex 960
+Removed vertex 1044
+Removed vertex 1057
+Removed vertex 1166
+Removed vertex 1180
+Removed vertex 1233
+Removed vertex 1254
+Removed vertex 1259
+Removed vertex 1303
+Removed vertex 1359
+Removed vertex 1364
+Removed vertex 1684
+Removed vertex 1776
+Removed vertex 1912
+Removed vertex 2158
+Removed vertex 2283
+Removed vertex 3236
+Removed vertex 3513
+Removed vertex 3515
+Removed vertex 3883
+Removed vertex 5098
+Removed vertex 5476
+Removed vertex 6010
+Removed vertex 6032
+Removed vertex 6197
+Removed vertex 6283
+Removed vertex 7415
+Removed vertex 7944
+Removed vertex 8748
+Removed vertex 9570
+Removed vertex 9760
+Removed vertex 10002
+Removed vertex 10469
+Removed vertex 10761
+Removed vertex 11004
+Removed vertex 11605
+Removed vertex 11606
+Removed vertex 11862
+The best solution is a Minimal Dominating Set
+value 4817	time 170.56
+end application 2
+
+start application 3
+Generated initial solution: 1/10. Fitness: 28646. Time: 14/3200.00
+Generated initial solution: 2/10. Fitness: 29187. Time: 30/3200.00
+Generated initial solution: 3/10. Fitness: 28965. Time: 46/3200.00
+Generated initial solution: 4/10. Fitness: 29370. Time: 60/3200.00
+Generated initial solution: 5/10. Fitness: 29210. Time: 74/3200.00
+Generated initial solution: 6/10. Fitness: 29378. Time: 89/3200.00
+Generated initial solution: 7/10. Fitness: 29502. Time: 104/3200.00
+Generated initial solution: 8/10. Fitness: 29029. Time: 119/3200.00
+Generated initial solution: 9/10. Fitness: 29031. Time: 135/3200.00
+Generated initial solution: 10/10. Fitness: 29051. Time: 150/3200.00
+Generated initial solutions
+Best Solution value: 4906
+Generation: 1/500. Fitness Best: 28646. Fitness Total: 415598. Time: 150/3200.00
+Generation: 2/500. Fitness Best: 28646. Fitness Total: 439080. Time: 150/3200.00
+Generation: 3/500. Fitness Best: 28646. Fitness Total: 412869. Time: 151/3200.00
+Generation: 4/500. Fitness Best: 28646. Fitness Total: 322362. Time: 151/3200.00
+Generation: 5/500. Fitness Best: 28646. Fitness Total: 291291. Time: 151/3200.00
+Generation: 6/500. Fitness Best: 28646. Fitness Total: 290290. Time: 151/3200.00
+Generation: 7/500. Fitness Best: 28646. Fitness Total: 290290. Time: 152/3200.00
+The best solution is a Dominating Set
+Removed vertex 14
+Removed vertex 16
+Removed vertex 158
+Removed vertex 172
+Removed vertex 225
+Removed vertex 339
+Removed vertex 345
+Removed vertex 397
+Removed vertex 406
+Removed vertex 408
+Removed vertex 430
+Removed vertex 432
+Removed vertex 434
+Removed vertex 438
+Removed vertex 444
+Removed vertex 450
+Removed vertex 468
+Removed vertex 477
+Removed vertex 482
+Removed vertex 483
+Removed vertex 490
+Removed vertex 492
+Removed vertex 496
+Removed vertex 497
+Removed vertex 506
+Removed vertex 516
+Removed vertex 519
+Removed vertex 530
+Removed vertex 534
+Removed vertex 535
+Removed vertex 545
+Removed vertex 552
+Removed vertex 576
+Removed vertex 577
+Removed vertex 616
+Removed vertex 621
+Removed vertex 829
+Removed vertex 885
+Removed vertex 989
+Removed vertex 1006
+Removed vertex 1057
+Removed vertex 1139
+Removed vertex 1180
+Removed vertex 1219
+Removed vertex 1254
+Removed vertex 1308
+Removed vertex 1359
+Removed vertex 1362
+Removed vertex 1398
+Removed vertex 1543
+Removed vertex 1683
+Removed vertex 1776
+Removed vertex 1912
+Removed vertex 1999
+Removed vertex 2046
+Removed vertex 2279
+Removed vertex 2527
+Removed vertex 2594
+Removed vertex 2893
+Removed vertex 2904
+Removed vertex 3235
+Removed vertex 3261
+Removed vertex 3489
+Removed vertex 3513
+Removed vertex 3515
+Removed vertex 3516
+Removed vertex 3620
+Removed vertex 3868
+Removed vertex 3883
+Removed vertex 4654
+Removed vertex 5178
+Removed vertex 5483
+Removed vertex 5897
+Removed vertex 6181
+Removed vertex 6283
+Removed vertex 6337
+Removed vertex 6342
+Removed vertex 7101
+Removed vertex 7152
+Removed vertex 7415
+Removed vertex 7473
+Removed vertex 7629
+Removed vertex 8206
+Removed vertex 8818
+Removed vertex 9000
+Removed vertex 9427
+Removed vertex 9570
+Removed vertex 9975
+Removed vertex 10002
+Removed vertex 10118
+Removed vertex 10357
+Removed vertex 10479
+Removed vertex 10793
+Removed vertex 11605
+Removed vertex 11606
+The best solution is a Minimal Dominating Set
+value 4811	time 152.54
+end application 3
+
+start application 4
+Generated initial solution: 1/10. Fitness: 29529. Time: 15/3200.00
+Generated initial solution: 2/10. Fitness: 29296. Time: 28/3200.00
+Generated initial solution: 3/10. Fitness: 28890. Time: 41/3200.00
+Generated initial solution: 4/10. Fitness: 29036. Time: 55/3200.00
+Generated initial solution: 5/10. Fitness: 29497. Time: 70/3200.00
+Generated initial solution: 6/10. Fitness: 28751. Time: 85/3200.00
+Generated initial solution: 7/10. Fitness: 28645. Time: 98/3200.00
+Generated initial solution: 8/10. Fitness: 29608. Time: 113/3200.00
+Generated initial solution: 9/10. Fitness: 29174. Time: 128/3200.00
+Generated initial solution: 10/10. Fitness: 28753. Time: 142/3200.00
+Generated initial solutions
+Best Solution value: 4904
+Generation: 1/500. Fitness Best: 28645. Fitness Total: 399847. Time: 142/3200.00
+Generation: 2/500. Fitness Best: 28645. Fitness Total: 483641. Time: 142/3200.00
+Generation: 3/500. Fitness Best: 28645. Fitness Total: 455580. Time: 143/3200.00
+Generation: 4/500. Fitness Best: 28645. Fitness Total: 440266. Time: 143/3200.00
+Generation: 5/500. Fitness Best: 28645. Fitness Total: 316393. Time: 143/3200.00
+Generation: 6/500. Fitness Best: 28645. Fitness Total: 288029. Time: 143/3200.00
+Generation: 7/500. Fitness Best: 28645. Fitness Total: 287513. Time: 143/3200.00
+Generation: 8/500. Fitness Best: 28645. Fitness Total: 287510. Time: 144/3200.00
+Generation: 9/500. Fitness Best: 28645. Fitness Total: 287518. Time: 144/3200.00
+Generation: 10/500. Fitness Best: 28645. Fitness Total: 288021. Time: 144/3200.00
+Generation: 11/500. Fitness Best: 28645. Fitness Total: 288526. Time: 144/3200.00
+Generation: 12/500. Fitness Best: 28645. Fitness Total: 290015. Time: 144/3200.00
+Generation: 13/500. Fitness Best: 28645. Fitness Total: 292508. Time: 145/3200.00
+Generation: 14/500. Fitness Best: 28645. Fitness Total: 288545. Time: 145/3200.00
+Generation: 15/500. Fitness Best: 28645. Fitness Total: 289024. Time: 145/3200.00
+Generation: 16/500. Fitness Best: 28645. Fitness Total: 287514. Time: 145/3200.00
+Generation: 17/500. Fitness Best: 28645. Fitness Total: 292508. Time: 145/3200.00
+Generation: 18/500. Fitness Best: 28645. Fitness Total: 287510. Time: 146/3200.00
+Generation: 19/500. Fitness Best: 28645. Fitness Total: 287511. Time: 146/3200.00
+Generation: 20/500. Fitness Best: 28645. Fitness Total: 288980. Time: 146/3200.00
+Generation: 21/500. Fitness Best: 28645. Fitness Total: 287516. Time: 146/3200.00
+Generation: 22/500. Fitness Best: 28645. Fitness Total: 287513. Time: 146/3200.00
+Generation: 23/500. Fitness Best: 28645. Fitness Total: 287490. Time: 147/3200.00
+Generation: 24/500. Fitness Best: 28645. Fitness Total: 287463. Time: 147/3200.00
+Generation: 25/500. Fitness Best: 28645. Fitness Total: 288287. Time: 147/3200.00
+Generation: 26/500. Fitness Best: 28645. Fitness Total: 287883. Time: 147/3200.00
+Generation: 27/500. Fitness Best: 28645. Fitness Total: 287409. Time: 147/3200.00
+Generation: 28/500. Fitness Best: 28645. Fitness Total: 287804. Time: 148/3200.00
+Generation: 29/500. Fitness Best: 28645. Fitness Total: 287250. Time: 148/3200.00
+Generation: 30/500. Fitness Best: 28645. Fitness Total: 287611. Time: 148/3200.00
+Generation: 31/500. Fitness Best: 28645. Fitness Total: 287041. Time: 148/3200.00
+Generation: 32/500. Fitness Best: 28645. Fitness Total: 287000. Time: 148/3200.00
+Generation: 33/500. Fitness Best: 28645. Fitness Total: 287482. Time: 149/3200.00
+Generation: 34/500. Fitness Best: 28645. Fitness Total: 288968. Time: 149/3200.00
+Generation: 35/500. Fitness Best: 28645. Fitness Total: 286990. Time: 149/3200.00
+Generation: 36/500. Fitness Best: 28645. Fitness Total: 291390. Time: 149/3200.00
+Generation: 37/500. Fitness Best: 28645. Fitness Total: 288533. Time: 150/3200.00
+Generation: 38/500. Fitness Best: 28645. Fitness Total: 287487. Time: 150/3200.00
+Generation: 39/500. Fitness Best: 28645. Fitness Total: 286994. Time: 150/3200.00
+Generation: 40/500. Fitness Best: 28645. Fitness Total: 287973. Time: 150/3200.00
+Generation: 41/500. Fitness Best: 28645. Fitness Total: 291411. Time: 150/3200.00
+Generation: 42/500. Fitness Best: 28645. Fitness Total: 298933. Time: 151/3200.00
+Generation: 43/500. Fitness Best: 28645. Fitness Total: 287994. Time: 151/3200.00
+Generation: 44/500. Fitness Best: 28645. Fitness Total: 286990. Time: 151/3200.00
+Generation: 45/500. Fitness Best: 28645. Fitness Total: 288992. Time: 151/3200.00
+Generation: 46/500. Fitness Best: 28645. Fitness Total: 292677. Time: 151/3200.00
+Generation: 47/500. Fitness Best: 28645. Fitness Total: 286992. Time: 152/3200.00
+Generation: 48/500. Fitness Best: 28645. Fitness Total: 287495. Time: 152/3200.00
+Generation: 49/500. Fitness Best: 28645. Fitness Total: 289020. Time: 152/3200.00
+Generation: 50/500. Fitness Best: 28645. Fitness Total: 286990. Time: 152/3200.00
+Generation: 51/500. Fitness Best: 28645. Fitness Total: 287000. Time: 153/3200.00
+Generation: 52/500. Fitness Best: 28645. Fitness Total: 297540. Time: 153/3200.00
+Generation: 53/500. Fitness Best: 28645. Fitness Total: 287062. Time: 153/3200.00
+Generation: 54/500. Fitness Best: 28537. Fitness Total: 286834. Time: 153/3200.00
+Generation: 55/500. Fitness Best: 28537. Fitness Total: 286506. Time: 153/3200.00
+Generation: 56/500. Fitness Best: 28537. Fitness Total: 291443. Time: 154/3200.00
+Generation: 57/500. Fitness Best: 28537. Fitness Total: 286018. Time: 154/3200.00
+Generation: 58/500. Fitness Best: 28537. Fitness Total: 285698. Time: 154/3200.00
+Generation: 59/500. Fitness Best: 28537. Fitness Total: 285862. Time: 154/3200.00
+Generation: 60/500. Fitness Best: 28537. Fitness Total: 285447. Time: 155/3200.00
+Generation: 61/500. Fitness Best: 28537. Fitness Total: 285874. Time: 155/3200.00
+Generation: 62/500. Fitness Best: 28537. Fitness Total: 285373. Time: 155/3200.00
+Generation: 63/500. Fitness Best: 28537. Fitness Total: 289362. Time: 155/3200.00
+Generation: 64/500. Fitness Best: 28537. Fitness Total: 286278. Time: 155/3200.00
+Generation: 65/500. Fitness Best: 28537. Fitness Total: 285370. Time: 156/3200.00
+Generation: 66/500. Fitness Best: 28537. Fitness Total: 285419. Time: 156/3200.00
+Generation: 67/500. Fitness Best: 28537. Fitness Total: 285370. Time: 156/3200.00
+Generation: 68/500. Fitness Best: 28537. Fitness Total: 285380. Time: 156/3200.00
+Generation: 69/500. Fitness Best: 28537. Fitness Total: 287818. Time: 157/3200.00
+Generation: 70/500. Fitness Best: 28537. Fitness Total: 285377. Time: 157/3200.00
+Generation: 71/500. Fitness Best: 28537. Fitness Total: 287344. Time: 157/3200.00
+Generation: 72/500. Fitness Best: 28537. Fitness Total: 285374. Time: 157/3200.00
+Generation: 73/500. Fitness Best: 28537. Fitness Total: 285370. Time: 157/3200.00
+Generation: 74/500. Fitness Best: 28537. Fitness Total: 285890. Time: 158/3200.00
+Generation: 75/500. Fitness Best: 28537. Fitness Total: 285370. Time: 158/3200.00
+Generation: 76/500. Fitness Best: 28537. Fitness Total: 285370. Time: 158/3200.00
+The best solution is a Dominating Set
+Removed vertex 16
+Removed vertex 158
+Removed vertex 172
+Removed vertex 225
+Removed vertex 339
+Removed vertex 345
+Removed vertex 406
+Removed vertex 408
+Removed vertex 430
+Removed vertex 432
+Removed vertex 434
+Removed vertex 435
+Removed vertex 441
+Removed vertex 444
+Removed vertex 450
+Removed vertex 468
+Removed vertex 477
+Removed vertex 482
+Removed vertex 483
+Removed vertex 490
+Removed vertex 492
+Removed vertex 496
+Removed vertex 497
+Removed vertex 506
+Removed vertex 516
+Removed vertex 519
+Removed vertex 530
+Removed vertex 534
+Removed vertex 535
+Removed vertex 552
+Removed vertex 562
+Removed vertex 576
+Removed vertex 577
+Removed vertex 589
+Removed vertex 616
+Removed vertex 655
+Removed vertex 885
+Removed vertex 1057
+Removed vertex 1074
+Removed vertex 1126
+Removed vertex 1139
+Removed vertex 1166
+Removed vertex 1254
+Removed vertex 1271
+Removed vertex 1277
+Removed vertex 1340
+Removed vertex 1472
+Removed vertex 1912
+Removed vertex 2046
+Removed vertex 2350
+Removed vertex 2533
+Removed vertex 2603
+Removed vertex 2904
+Removed vertex 3091
+Removed vertex 3182
+Removed vertex 3513
+Removed vertex 3620
+Removed vertex 3883
+Removed vertex 4635
+Removed vertex 5065
+Removed vertex 5098
+Removed vertex 5143
+Removed vertex 5617
+Removed vertex 6032
+Removed vertex 6098
+Removed vertex 6283
+Removed vertex 6568
+Removed vertex 6934
+Removed vertex 7415
+Removed vertex 8409
+Removed vertex 8579
+Removed vertex 9570
+Removed vertex 9717
+Removed vertex 9994
+Removed vertex 10002
+Removed vertex 10142
+Removed vertex 10793
+Removed vertex 10815
+Removed vertex 11004
+Removed vertex 11605
+Removed vertex 11606
+The best solution is a Minimal Dominating Set
+value 4818	time 159.00
+end application 4
+
+start application 5
+Generated initial solution: 1/10. Fitness: 29707. Time: 14/3200.00
+Generated initial solution: 2/10. Fitness: 28753. Time: 29/3200.00
+Generated initial solution: 3/10. Fitness: 29005. Time: 43/3200.00
+Generated initial solution: 4/10. Fitness: 28924. Time: 57/3200.00
+Generated initial solution: 5/10. Fitness: 29173. Time: 70/3200.00
+Generated initial solution: 6/10. Fitness: 29062. Time: 84/3200.00
+Generated initial solution: 7/10. Fitness: 29022. Time: 99/3200.00
+Generated initial solution: 8/10. Fitness: 29543. Time: 114/3200.00
+Generated initial solution: 9/10. Fitness: 29032. Time: 127/3200.00
+Generated initial solution: 10/10. Fitness: 28733. Time: 140/3200.00
+Generated initial solutions
+Best Solution value: 4903
+Generation: 1/500. Fitness Best: 28733. Fitness Total: 359658. Time: 140/3200.00
+Generation: 2/500. Fitness Best: 28733. Fitness Total: 369687. Time: 140/3200.00
+Generation: 3/500. Fitness Best: 28733. Fitness Total: 351576. Time: 141/3200.00
+Generation: 4/500. Fitness Best: 28733. Fitness Total: 287837. Time: 141/3200.00
+Generation: 5/500. Fitness Best: 28733. Fitness Total: 289891. Time: 141/3200.00
+Generation: 6/500. Fitness Best: 28733. Fitness Total: 287349. Time: 141/3200.00
+Generation: 7/500. Fitness Best: 28733. Fitness Total: 287339. Time: 141/3200.00
+Generation: 8/500. Fitness Best: 28733. Fitness Total: 287834. Time: 142/3200.00
+Generation: 9/500. Fitness Best: 28733. Fitness Total: 287331. Time: 142/3200.00
+Generation: 10/500. Fitness Best: 28733. Fitness Total: 291819. Time: 142/3200.00
+Generation: 11/500. Fitness Best: 28733. Fitness Total: 287330. Time: 142/3200.00
+Generation: 12/500. Fitness Best: 28733. Fitness Total: 287676. Time: 143/3200.00
+Generation: 13/500. Fitness Best: 28733. Fitness Total: 287868. Time: 143/3200.00
+Generation: 14/500. Fitness Best: 28733. Fitness Total: 287856. Time: 143/3200.00
+Generation: 15/500. Fitness Best: 28733. Fitness Total: 294799. Time: 143/3200.00
+Generation: 16/500. Fitness Best: 28733. Fitness Total: 288334. Time: 143/3200.00
+Generation: 17/500. Fitness Best: 28733. Fitness Total: 287330. Time: 144/3200.00
+Generation: 18/500. Fitness Best: 28733. Fitness Total: 287377. Time: 144/3200.00
+Generation: 19/500. Fitness Best: 28733. Fitness Total: 287336. Time: 144/3200.00
+Generation: 20/500. Fitness Best: 28733. Fitness Total: 287330. Time: 144/3200.00
+Generation: 21/500. Fitness Best: 28733. Fitness Total: 287358. Time: 144/3200.00
+Generation: 22/500. Fitness Best: 28733. Fitness Total: 287331. Time: 145/3200.00
+Generation: 23/500. Fitness Best: 28733. Fitness Total: 287331. Time: 145/3200.00
+The best solution is a Dominating Set
+Removed vertex 158
+Removed vertex 172
+Removed vertex 266
+Removed vertex 339
+Removed vertex 345
+Removed vertex 389
+Removed vertex 397
+Removed vertex 408
+Removed vertex 430
+Removed vertex 434
+Removed vertex 441
+Removed vertex 444
+Removed vertex 450
+Removed vertex 468
+Removed vertex 469
+Removed vertex 477
+Removed vertex 482
+Removed vertex 483
+Removed vertex 490
+Removed vertex 492
+Removed vertex 496
+Removed vertex 497
+Removed vertex 506
+Removed vertex 516
+Removed vertex 519
+Removed vertex 530
+Removed vertex 534
+Removed vertex 535
+Removed vertex 552
+Removed vertex 576
+Removed vertex 616
+Removed vertex 659
+Removed vertex 885
+Removed vertex 893
+Removed vertex 989
+Removed vertex 1006
+Removed vertex 1057
+Removed vertex 1180
+Removed vertex 1254
+Removed vertex 1303
+Removed vertex 1359
+Removed vertex 1757
+Removed vertex 1763
+Removed vertex 1912
+Removed vertex 2053
+Removed vertex 2057
+Removed vertex 2533
+Removed vertex 2670
+Removed vertex 2757
+Removed vertex 2893
+Removed vertex 3489
+Removed vertex 3513
+Removed vertex 3721
+Removed vertex 3786
+Removed vertex 3883
+Removed vertex 4635
+Removed vertex 5344
+Removed vertex 6197
+Removed vertex 6286
+Removed vertex 6467
+Removed vertex 6934
+Removed vertex 7415
+Removed vertex 7765
+Removed vertex 7994
+Removed vertex 8203
+Removed vertex 8409
+Removed vertex 8579
+Removed vertex 8719
+Removed vertex 9380
+Removed vertex 10002
+Removed vertex 10364
+Removed vertex 10815
+Removed vertex 11605
+Removed vertex 11606
+The best solution is a Minimal Dominating Set
+value 4829	time 145.76
+end application 5
+
+4811	4821.40	7.86	158.57	8.79

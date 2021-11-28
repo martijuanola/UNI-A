@@ -9,8 +9,8 @@ CCOPT = -m64 -O -fPIC -fexceptions -DNDEBUG -DIL_STD -std=c++17 -fpermissive -w
 
 SYSTEM     = x86-64_linux
 LIBFORMAT  = static_pic
-CPLEXDIR      = /home/mjblesa/ILOG/CPLEX_Studio201/cplex
-CONCERTDIR    = /home/mjblesa/ILOG/CPLEX_Studio201/concert
+CPLEXDIR      = /home/r5d8/fib/A/CPLEX_program/CPLEX_Studio201/cplex
+CONCERTDIR    = /home/r5d8/fib/A/CPLEX_program/CPLEX_Studio201/concert
 
 CPLEXBINDIR   = $(CPLEXDIR)/bin/$(BINDIST)
 CPLEXLIBDIR   = $(CPLEXDIR)/lib/$(SYSTEM)/$(LIBFORMAT)
@@ -44,11 +44,11 @@ metaheuristic: src/metaheuristic/metaheuristic.cpp $(OBJS)
 	#${CCC} ${CXXFLAGS} -o src/metaheuristic/$@ $^
 	${CCC} ${CXXFLAGS} -o bin/$@ $^
 
-#cplex: cplex.o $(CPLOBJS)
-#	$(CCC) $(CCFLAGS) cplex.o $(CPLOBJS) -o cplex $(CCLNFLAGS)
+cplex: cplex.o $(CPLOBJS)
+	$(CCC) $(CCFLAGS) ./bin/obj/cplex.o $(CPLOBJS) -o ./bin/cplex $(CCLNFLAGS)
 
-#cplex.o: src/cplex/cplex.cpp
-#	$(CCC) -c $(CCFLAGS) src/cplex/cplex.cpp -o cplex.o 
+cplex.o: src/cplex/cplex.cpp
+	$(CCC) -c $(CCFLAGS) src/cplex/cplex.cpp -o ./bin/obj/cplex.o 
 
 clean:
 	@rm -f *~ *.o ${TARGET} core

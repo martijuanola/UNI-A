@@ -41,7 +41,8 @@ local_search: src/local_search/local_search.cpp $(OBJS)
 	${CCC} ${CXXFLAGS} -o bin/$@ $^
 
 metaheuristic: src/metaheuristic/metaheuristic.cpp $(OBJS)
-	${CCC} ${CXXFLAGS} -o src/metaheuristic/$@ $^
+	#${CCC} ${CXXFLAGS} -o src/metaheuristic/$@ $^
+	${CCC} ${CXXFLAGS} -o bin/$@ $^
 
 #cplex: cplex.o $(CPLOBJS)
 #	$(CCC) $(CCFLAGS) cplex.o $(CPLOBJS) -o cplex $(CCLNFLAGS)

@@ -11,8 +11,8 @@ SI=2
 #s'ha de canviar després de l'experiment
 T=10000
 ITR=15
-K=7
-L=0.1
+K=10
+L=0.075
 
 make local_search
 

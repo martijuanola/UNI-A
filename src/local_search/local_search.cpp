@@ -51,8 +51,8 @@ int SI = 2;
 //SA parameters
 int T = 10000;
 int iT = 15;
-int k = 7;
-float l = 0.1;
+int k = 10;
+float l = 0.075;
 
 //Greedy Jaume
 int profunditat = 7;

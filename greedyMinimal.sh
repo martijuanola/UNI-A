@@ -1,0 +1,10 @@
+./bin/greedy -i data/graph_actors_dat.txt -a 1 > resultGM/graph_actors_datRESULT.txt
+./bin/greedy -i data/ego-facebook.txt -a 1 > resultGM/ego-facebookRESULT.txt
+./bin/greedy -i data/graph_CA-AstroPh.txt -a 1 > resultGM/graph_CA-AstroPhRESULT.txt
+./bin/greedy -i data/graph_CA-CondMat.txt -a 1 > resultGM/graph_CA-CondMatRESULT.txt
+./bin/greedy -i data/graph_CA-HepPh.txt -a 1 > resultGM/graph_CA-HepPhRESULT.txt
+./bin/greedy -i data/graph_football.txt -a 1 > resultGM/graph_footballRESULT.txt
+./bin/greedy -i data/graph_jazz.txt -a 1 > resultGM/graph_jazzRESULT.txt
+./bin/greedy -i data/socfb-Brandeis99.txt -a 1 > resultGM/socfb-Brandeis99RESULT.txt
+./bin/greedy -i data/socfb-Mich67.txt -a 1 > resultGM/socfb-Mich67RESULT.txt
+./bin/greedy -i data/soc-gplus.txt -a 1 > resultGM/soc-gplusRESULT.txt

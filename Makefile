@@ -1,4 +1,4 @@
-TARGET = basic greedy local_search metaheuristic #cplex hybrid_metaheuristic
+TARGET = basic greedy local_search metaheuristic cplex
 CXXFLAGS = -ansi -O3 -fpermissive -std=c++17 
 OBJS = src/Random.o src/Timer.o
 CPLOBJS = src/Random.o src/Timer.o

@@ -1,4 +1,4 @@
-TARGET = basic greedy local_search metaheuristic #cplex
+TARGET = basic greedy local_search metaheuristic cplex
 CXXFLAGS = -ansi -O3 -fpermissive -std=c++17 
 OBJS = Random.o Timer.o
 CPLOBJS = Random.o Timer.o
@@ -9,8 +9,10 @@ CCOPT = -m64 -O -fPIC -fexceptions -DNDEBUG -DIL_STD -std=c++17 -fpermissive -w
 
 SYSTEM     = x86-64_linux
 LIBFORMAT  = static_pic
-CPLEXDIR      = /home/mjblesa/ILOG/CPLEX_Studio201/cplex #canviar si cal!!!
-CONCERTDIR    = /home/mjblesa/ILOG/CPLEX_Studio201/concert
+#CPLEXDIR      = /home/mjblesa/ILOG/CPLEX_Studio201/cplex
+#CONCERTDIR    = /home/mjblesa/ILOG/CPLEX_Studio201/concert
+CPLEXDIR      = /home/r5d8/fib/A/CPLEX_program/CPLEX_Studio201/cplex
+CONCERTDIR    = /home/r5d8/fib/A/CPLEX_program/CPLEX_Studio201/concert
 
 CPLEXBINDIR   = $(CPLEXDIR)/bin/$(BINDIST)
 CPLEXLIBDIR   = $(CPLEXDIR)/lib/$(SYSTEM)/$(LIBFORMAT)
@@ -34,13 +36,14 @@ local_search: local_search.cpp $(OBJS)
 	${CCC} ${CXXFLAGS} -o EXES/$@ $^
 
 metaheuristic: metaheuristic.cpp $(OBJS)
-	${CCC} ${CXXFLAGS} -o metaheuristic/$@ $^
+	${CCC} ${CXXFLAGS} -o EXES/$@ $^
 
-#cplex: cplex.o $(CPLOBJS)
-#	$(CCC) $(CCFLAGS) cplex.o $(CPLOBJS) -o cplex $(CCLNFLAGS)
+cplex: cplex.o $(CPLOBJS)
+	$(CCC) $(CCFLAGS) EXES/OBJ/cplex.o $(CPLOBJS) -o EXES/cplex $(CCLNFLAGS)
 
-#cplex.o: cplex/cplex.cpp
-#	$(CCC) -c $(CCFLAGS) cplex/cplex.cpp -o cplex.o 
+cplex.o: cplex.cpp
+	mkdir EXES/OBJ
+	$(CCC) -c $(CCFLAGS) cplex.cpp -o EXES/OBJ/cplex.o 
 
 clean:
 	@rm -f *~ *.o ${TARGET} core

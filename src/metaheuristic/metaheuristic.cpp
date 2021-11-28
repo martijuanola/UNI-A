@@ -52,7 +52,7 @@ vector<unordered_set<int>> nodes;//altGreedy posicio del vector es valor del nod
 int maxPos; //altGreedy indica quina es la posicio més alta del vector on hi ha vertexs
 vector<int> pos; //altGreedy indica quina es la posicio al vector de nodes de cada vertex (no ordenat)
 vector<bool> calculat; //altGreedy per indicar quins vertexs ja s'han calculat
-int profunditat = 1;
+int profunditat = 2;
 
 
 // string for keeping the name of the input file
@@ -74,10 +74,12 @@ typedef vector<bool> Gene;
 typedef vector<Gene> Population;
 typedef vector<int>  Pop_Fitness;
 
-int POP_SIZE = 100;
-double CROSS_PROB = 0.8;
-double MUTATE_PROB = 0.2;
-int MAX_GEN = 100;
+int POP_SIZE = 50;
+double CROSS_PROB = 0.50;
+double MUTATE_PROB = 0.05;
+int MAX_GEN = 250;
+
+Gene best_greedy;
 
 //funcions plantilla
 inline int stoi(string &s) {
@@ -125,6 +127,21 @@ bool dominador() {
         if(NND[i] < float(neighbors[i].size())/float(2)) return false;
     }
     return true;
+}
+
+int minimal3(vector<bool> DV, vector<int> NND) {
+    for(int i = 0; i < DV.size(); i++) {
+        if(DV[i]) {
+            unordered_set<int>::iterator itr = neighbors[i].begin();
+            bool b = true;
+            while(itr != neighbors[i].end() and b) {
+                if(NND[*itr]-1 < minNND(neighbors[*itr].size())) b = false;
+                itr++;
+            }
+            if(b) return i;
+        }
+    }
+    return -1;
 }
 
 void g(int v) {
@@ -197,6 +214,7 @@ void greedyRandom() { //Igual que altGreedy pero amb aleatorietat
     D = vector<bool>(N, false); //Comença amb cap node a la solucio
     s = vector<bool>(N, false); //Tots començen a false (0)
     pos = vector<int>(N, 0);
+    NND = vector<int>(N, 0);
 
     maxPos = 0;
     for (int i = 0; i < N; ++i) {
@@ -207,11 +225,9 @@ void greedyRandom() { //Igual que altGreedy pero amb aleatorietat
         pos[i] = p;
     }
 
-    cout << "CUMMER " << nodes[maxPos].size() << endl;
 
     while (not dominador()) {
         auto it = nodes[maxPos].begin();
-        cout << "CUMM " << maxPos <<endl;
         int rando = rand()%nodes[maxPos].size();
 
         while (rando > 0) {
@@ -248,7 +264,7 @@ int fitness(const Gene & gen) {
 
         int cost_vertex = adj_marked - grau_half;
         //doesnt reach 50% and we must penalize it
-        if (cost_vertex < 0) fitness += cost_vertex*cost_vertex;
+        if (cost_vertex < 0) fitness += cost_vertex*cost_vertex+500;
         else fitness += cost_vertex;
     }
 
@@ -265,20 +281,24 @@ int random(int min, int max) {
    return min + rand() % (( max + 1 ) - min);
 }
 
-void generate_pop_ini(Population& pop, Pop_Fitness& pop_fitness, Gene& best, int& best_fitness) {
-    for (int i = 0; i < POP_SIZE; ++i) {
-        //greedyRandom();
+void generate_pop_ini(Population& pop, Pop_Fitness& pop_fitness, Gene& best, int& best_fitness, Timer& timer) {
+    for (int i = 0; i < POP_SIZE and timer.elapsed_time(Timer::VIRTUAL) < time_limit-10; ++i) {
+        greedyRandom();
+        /*
         D = vector<bool>(N, false);
         for (int j = 0; j < N; ++j) {
           D[j] = random(0,1);
-        }
+        }*/
         pop[i] = D;
 
         int fitness_current = fitness(D);
         pop_fitness[i] = fitness_current;
 
         if (fitness_current < best_fitness) {best = D; best_fitness = fitness_current;}
+        cout << "Generated initial solution: " << i << "/" << POP_SIZE;
+        cout << ". Time: " << (int) timer.elapsed_time(Timer::VIRTUAL) << "/" << time_limit << endl;
     }
+    best_greedy = best;
     cout << "Generated initial solutions"  << endl;
 }
 
@@ -387,15 +407,15 @@ int main( int argc, char **argv ) {
         Gene best(N);
         int best_fitness = std::numeric_limits<int>::max();
 
-        generate_pop_ini(pop, pop_fitness, best, best_fitness);
+        generate_pop_ini(pop, pop_fitness, best, best_fitness, timer);
 
         for (int generation = 0;
           //we iterate up to the maximum generation or...
           generation < MAX_GEN and
           //until our total fitness does not improve or...
-          FITNESS_TOTAL < FITNESS_ANT and
+          //FITNESS_TOTAL != FITNESS_ANT and
           //until we reach the time limit.
-          timer.elapsed_time(Timer::VIRTUAL) < time_limit;
+          timer.elapsed_time(Timer::VIRTUAL) < time_limit-10;
           ++generation) {
 
               FITNESS_ANT = FITNESS_TOTAL;
@@ -403,7 +423,7 @@ int main( int argc, char **argv ) {
 
               Population pop_new(POP_SIZE, Gene(N));
               Pop_Fitness pop_fitness_new(POP_SIZE, -1);
-              for (int child_idx = 0; child_idx < POP_SIZE and timer.elapsed_time(Timer::VIRTUAL);
+              for (int child_idx = 0; child_idx < POP_SIZE and timer.elapsed_time(Timer::VIRTUAL) < time_limit-10;
               ++child_idx) {
 
                 Gene x = pop[selection(pop_fitness)];
@@ -426,22 +446,56 @@ int main( int argc, char **argv ) {
 
                 }
 
-                cout << "Generation: " << generation << ". Fitness Best: " << best_fitness;
-                cout << ". Fitness Total: " << FITNESS_TOTAL << ". Time: " << (int) timer.elapsed_time(Timer::VIRTUAL) <<endl;
+                cout << "Generation: " << generation << "/" << MAX_GEN <<". Fitness Best: " << best_fitness;
+                cout << ". Fitness Total: " << FITNESS_TOTAL << ". Time: " << (int) timer.elapsed_time(Timer::VIRTUAL) <<"/"<<time_limit<<endl;
 
                 pop = pop_new;
                 pop_fitness = pop_fitness_new;
             }
-            double ct = timer.elapsed_time(Timer::VIRTUAL);
 
-            int MDPI_size = 0;
-            for (int i = 0; i < N; ++i) MDPI_size += best[i];
+            D = best;
+            NND = vector<int>(N, 0);
+            for (int i = 0; i < N; ++i) {
+                auto it = neighbors[i].begin();
+                while (it != neighbors[i].end()) {
+                    if (D[*it]) ++NND[i];
+                    ++it;
+                }
+            }
+            if (dominador()) {
+                cout << "The best solution is a Dominating Set" << endl;
 
-            cout << "value " << MDPI_size;
-            cout << "\ttime " << ct << endl;
+                int  idx_remove = minimal3(best, NND);
+                while(idx_remove != -1 and timer.elapsed_time(Timer::VIRTUAL) < time_limit) {
+                  best[idx_remove] = 0;
 
-            results[na] = MDPI_size;
-            times[na] = ct;
+                  D = best;
+                  NND = vector<int>(N, 0);
+                  for (int i = 0; i < N; ++i) {
+                      auto it = neighbors[i].begin();
+                      while (it != neighbors[i].end()) {
+                          if (D[*it]) ++NND[i];
+                          ++it;
+                      }
+                  }
+                  cout << "Removed vertex "<< idx_remove << endl;
+                  idx_remove = minimal3(best, NND);
+                }
+                cout << "The best solution is a Minimal Dominating Set" << endl;
+
+            }
+            else {cout << "The best solution is NOT a Dominating Set. Welp. Recovering greedy best" << endl; best = best_greedy;}
+
+        double ct = timer.elapsed_time(Timer::VIRTUAL);
+
+        int MDPI_size = 0;
+        for (int i = 0; i < N; ++i) MDPI_size += best[i];
+
+        cout << "value " << MDPI_size;
+        cout << "\ttime " << ct << endl;
+
+        results[na] = MDPI_size;
+        times[na] = ct;
 
         cout << "end application " << na + 1 << endl;
         cout << endl;

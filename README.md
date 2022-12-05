@@ -1,2 +1,2 @@
 # UNI-A
-A - Algorismia - GEI - FIB - UPC
+A - Algorísmia - GEI - FIB - UPC
